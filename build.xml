@@ -16,8 +16,6 @@
 			</fileset>
 			<fileset dir="${libdir}/${os}/">
 				<include name="**/*.jar"/>
-				<include name="**/*.jnilib"/>
-				<include name="**/*.dll"/>
 			</fileset>
 	</path>	
 
@@ -28,7 +26,6 @@
 			</fileset>
 			<fileset dir="lib/${os}/">
 				<include name="**/*.jar"/>
-				<include name="**/*.jnilib"/>
 			</fileset>
 		<pathelement path="${builddir}"/>
 	</path>	
@@ -41,11 +38,18 @@
 		</javac>		
 	</target>
 	
+	<target name="test" depends="compile">	
+			<java classname="com.diddlebits.gpslib4j.examples.ConnectionTest">
+				<classpath refid="run.classpath"/>
+			</java>		
+	</target>
+	
 	<target name="jar">
 		<jar destfile="${libdir}/GPSlib4J.jar"
 			basedir="${builddir}"
 		/>
 	</target>
+	
 	<target name="clean">
 		<delete dir="${builddir}"/>
 		<delete dir="${docdir}"/>
@@ -64,7 +68,7 @@
 		</javadoc>
 	</target>
 
-	<target name="all" depends="clean, compile, jar, doc">
+	<target name="all" depends="clean, compile, jar, doc, test">
 	</target>
 
 </project>
