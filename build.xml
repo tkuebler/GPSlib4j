@@ -39,9 +39,17 @@
 	</target>
 	
 	<target name="test" depends="compile">	
+                <echo> Not working for some reason, use command line instead like the following:
+
+			java -Djava.library.path=lib/MacOSX -classpath lib/comm.jar:lib/GPSlib4J.jar:lib/MacOSX/jcl.jar:lib/MacOSX/RXTXcomm.jar com.diddlebits.gpslib4j.examples.ConnectionTest
+
+		</echo>
+		<!--
 			<java classname="com.diddlebits.gpslib4j.examples.ConnectionTest">
 				<classpath refid="run.classpath"/>
+				<jvmarg value="-Djava.library.path=${libdir}/${os}"/>
 			</java>		
+		-->
 	</target>
 	
 	<target name="jar">

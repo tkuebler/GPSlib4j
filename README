@@ -1,3 +1,13 @@
+Quick Start:
+
+Mac OS X: type 'ant test'
+
+Other OSes:  
+
+1) download and install RXTX for your platform into the lib directory under the appropriate OS subdirectory
+2) type 'ant test'
+
+
 This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/). 
 
 Please look in the doc directory for more information on building, etc.
