@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>GPSLib4j</title>
+</head>
+<body>
+<table style="text-align: left; width: 968px; height: 588px;" border="0"
+ cellspacing="2" cellpadding="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><big><big>GPSLib4J&nbsp; v0.1</big></big><br>
+      <br>
+      <big><big><small>Mission:</small> </big>Create an easy to use,
+pluggable Java API for connecting to and exchanging data from GPS
+units.&nbsp; Let people concentrate on writing cool Java GPS apps
+instead of
+getting bogged down in serial port i/o
+problems.</big><br>
+      <br>
+      <ul>
+        <li>Seed code largely based on <a
+ href="http://www.aasted.org/gps/">Henirk Aasted Sorensen's
+dk.itu.haas.GPS library</a>.&nbsp; Thanks Henirk!! </li>
+        <li>Home Page:&nbsp; <a href="http://gpslib4j.sourceforge.net/">http://gpslib4j.sourceforge.net/</a>.</li>
+        <li>Development:&nbsp; <a
+ href="http://sourceforge.net/projects/gpslib4j">http://sourceforge.net/projects/gpslib4j</a>.</li>
+        <li><a href="javadocs">Javadocs</a>.<br>
+        </li>
+      </ul>
+      <br>
+This project will provide the following:<br>
+      <br style="color: rgb(0, 0, 0);">
+      <ul>
+        <li><span style="color: rgb(0, 0, 0);"> </span>Multiple
+physical layer support such as serial, bluetooth, etc.</li>
+        <ul>
+          <li><span style="color: rgb(0, 0, 0);">Cross platform <span
+ style="font-weight: bold;">serial</span> support vi the
+RXTX library (http://www.rxtx.org/) and the Java Comm API. (Mac OS X,
+Linux, Solaris, Windows, etc)</span></li>
+        </ul>
+        <li>Clean object model that allows for plugable extensibility.</li>
+        <ul>
+          <li>Interfaces to allow for writing/reading data from/to
+multiple file formats via plugins.</li>
+          <li>Interfaces to allow for protocol extensiblity.<br>
+          </li>
+        </ul>
+        <li>Threaded to allow it's background use in GUI applications.</li>
+        <ul>
+          <li>Uses listener design pattern for gps protocol event
+notification.</li>
+        </ul>
+        <li>Automatic unit discovery and initialization.</li>
+        <li>Two published APIs, one braindead simple and the other with
+access to the nitty gritty.</li>
+      </ul>
+      <br>
+Most GPS software out there reflects the complexity and multiplicity of
+GPS protocols, in our opinion this should not be the case.&nbsp;&nbsp;
+A simple
+API is needed similar to the following.<br>
+      <br>
+      <pre>myGPS[] = GPSLib4j.findGPS();&nbsp; // finds connected gps unit(s), identifies it <br>                               // and figures out what protocols it talks<br><br>Waypoints waypoints = myGPS[0].downloadWaypoints();<br>waypoints.writeGPXFormat();</pre>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<big><big><br>
+</big></big><br>
+<br>
+<br>
+<br>
+<br>
+</body>
+</html>
