@@ -5,6 +5,8 @@ import com.diddlebits.gpslib4j.PositionDegrees;
 
 /**
  * A class that encapsulates the basic functionality of a packet.
+ * 
+ * This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
  */
 public class GarminPacket {
 	// Basic Link Protocol - layer 1 of garmin protocol

@@ -2,6 +2,8 @@ package com.diddlebits.gpslib4j;
 
 /**
 * The methods in this interface are used whenever the GPS should transfer a series of data. 
+* 
+* This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
 */
 public interface ITransferListener {
 	/** 

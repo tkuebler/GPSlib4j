@@ -8,6 +8,8 @@ package com.diddlebits.gpslib4j;
 * <li> Don't perform any long calculations or big operations in these methods. They're called by a dispatching thread, and putting 
 * it to too much work will slow performance on the communication with the GPS.
 * </ul>
+* 
+* This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
 */
 
 public interface IGPSlistener {

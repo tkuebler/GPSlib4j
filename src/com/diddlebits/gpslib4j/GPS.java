@@ -5,6 +5,8 @@ import java.util.Vector;
 
 /**
 * This is the abstract base-class that encapsulates the functionality of a generic GPS-unit.
+* 
+* This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
 */
 public abstract class GPS {
 	

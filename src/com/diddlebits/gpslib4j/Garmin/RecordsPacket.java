@@ -3,6 +3,7 @@ package com.diddlebits.gpslib4j.Garmin;
 /**
 * This packet is transmitted between devices before a large transfer of data-units, ie. a transfer of waypoints.
 * 
+* This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
 */
 public class RecordsPacket extends GarminPacket {
 	/** The number of records to come, that this packet announces. */

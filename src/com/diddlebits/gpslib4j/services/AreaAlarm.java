@@ -7,6 +7,8 @@ import com.diddlebits.gpslib4j.*;
 * This class implements an AreaAlarm-service. The class allows the user to specify two positions, which
 * will be used as opposite corners in a rectangular area. Whenever the GPS enters or exits the area all 
 * listeners are notified through the IAlarmListener-interface.
+* 
+* This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
 */
 public class AreaAlarm implements IGPSlistener {
 	private GPS gps; 

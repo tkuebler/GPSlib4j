@@ -5,6 +5,8 @@ package com.diddlebits.gpslib4j.Garmin;
 * An example is if a PositionDataPacket is initialized with the byte-array containing time-data.
 * This exception is a runtime exception because it's assumed that there will in most cases be type-checking
 * of packets. 
+* 
+* This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
 */
 public class PacketNotRecognizedException extends RuntimeException {
 	

@@ -2,6 +2,8 @@ package com.diddlebits.gpslib4j.Garmin;
 
 /**
 * This method is thrown from the constructors of the packet-classes, whenever the int[]-array is not formatted according to the Garmin-packet-specs. 
+* 
+* This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
 */
 public class InvalidPacketException extends RuntimeException {
 	

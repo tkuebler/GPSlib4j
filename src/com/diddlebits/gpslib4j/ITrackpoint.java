@@ -11,6 +11,8 @@ package com.diddlebits.gpslib4j;
  *
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
+ * 
+ * This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
  */
 public interface ITrackpoint {
 	public Position getPosition();

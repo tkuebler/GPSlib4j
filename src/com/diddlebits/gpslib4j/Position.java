@@ -2,6 +2,8 @@ package com.diddlebits.gpslib4j;
 
 /**
 * This is a class meant for containing positions. 
+* 
+* This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
 */
 
 public class Position implements IPosition {

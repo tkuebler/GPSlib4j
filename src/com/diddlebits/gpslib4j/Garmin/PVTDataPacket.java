@@ -4,6 +4,8 @@ import com.diddlebits.gpslib4j.*;
 * This class encapsulates the PVT (Position, velocity and time) packet.
 * After receiving a Cmnd_Start_Pvt-packet, the GPS will continually transmit
 * packets of the PVT-type. 
+* 
+* This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
 */ 
 
 public class PVTDataPacket extends GarminPacket implements IPosition, ITime { 

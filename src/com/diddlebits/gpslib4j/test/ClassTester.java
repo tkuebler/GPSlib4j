@@ -7,6 +7,8 @@ import java.io.*;
 import com.diddlebits.gpslib4j.Garmin.*;
 /**
 * Class made to be able to test the classes of the com.diddlebits.gpslib4j-package.
+* 
+* This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
 */
 public class ClassTester implements IGPSlistener, GarminListener, IWaypointListener {	
 	public static void main(String args[]) {

@@ -5,6 +5,8 @@ import com.diddlebits.gpslib4j.*;
 /** 
 * This class encapsulates a trackpoint-packet. The Garmin-protocol contains a huge amount of different
 * trackpoint-Packet specifications. 
+* 
+* This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
 */ 
 public class TrackpointDataPacket extends GarminPacket implements ITrackpoint {
 	

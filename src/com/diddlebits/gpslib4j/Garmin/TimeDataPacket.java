@@ -4,6 +4,8 @@ import com.diddlebits.gpslib4j.*;
 
 /**
 * This class encapsulates the information of a Garmin-Date-Time-packet.
+* 
+* This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
 */
 
 public class TimeDataPacket extends GarminPacket implements ITime, IDate{

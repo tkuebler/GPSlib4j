@@ -3,6 +3,8 @@ package com.diddlebits.gpslib4j;
 /**
 * Class used to store radians, usually latitude or longitude.
 * Contains methods for converting to the format degress,minutes.
+* 
+* This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
 */ 
 public class PositionRadians {
 	private final double value;

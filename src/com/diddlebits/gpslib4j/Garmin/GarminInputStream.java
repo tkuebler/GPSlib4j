@@ -5,6 +5,8 @@ import java.io.*;
 * This class provides the functionality of automatically removing the double DLEs from the GPS-inputstream.
 * The double-DLEs can be found in the size-,data-, and checksum-fields. 
 * The only method providing the filtering-functionality is read().
+* 
+* This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
 */
 public class GarminInputStream extends FilterInputStream {
 	/*

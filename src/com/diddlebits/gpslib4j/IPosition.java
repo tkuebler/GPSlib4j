@@ -2,6 +2,8 @@ package com.diddlebits.gpslib4j;
 
 /**
 * This interface is implemented by all packets capable of returning a position.
+* 
+* This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
 */
 public interface IPosition {
 	/**

@@ -9,6 +9,8 @@ import javax.comm.*;
 
 import com.diddlebits.gpslib4j.*;
 
+/** This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/). */
+
 public class AreaAlarmDemo extends JFrame implements ActionListener, IGPSlistener, IAlarmListener {
 	GPS gps;		
 	AreaAlarm alarm;

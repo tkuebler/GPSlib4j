@@ -5,6 +5,8 @@ import java.io.*;
 * This class take care of adding DLE-stuffing to all packets sent to the GPS.
 * <b> NOTE: </b> Only the method write(GarminPacket) performs addition of DLE-stuffing. The remaining 
 * methods write directly to the GPS without format-control.
+* 
+* This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
 */
 
 public class GarminOutputStream extends FilterOutputStream {	
