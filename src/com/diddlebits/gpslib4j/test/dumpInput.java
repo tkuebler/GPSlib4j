@@ -1,6 +1,6 @@
 package com.diddlebits.gpslib4j.test;
 import javax.comm.*;
-import java.util.Enumeration;
+
 import java.io.*;
 
 /** 
@@ -23,10 +23,10 @@ public class dumpInput {
 			}
 			
 			try {
-				if (portID.getPortType() == portID.PORT_SERIAL) {
+				if (portID.getPortType() == CommPortIdentifier.PORT_SERIAL) {
 					port = (SerialPort) portID.open("com.diddlebits.gpslib4j", 3000);
-					port.setSerialPortParams(9600, port.DATABITS_8, port.STOPBITS_1, port.PARITY_NONE);
-					port.setFlowControlMode(port.FLOWCONTROL_NONE);
+					port.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+					port.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
 					System.out.println("Port configuration:");
 					System.out.println("Baud-rate: " + port.getBaudRate());
 					System.out.println("Parity: " + port.getParity());

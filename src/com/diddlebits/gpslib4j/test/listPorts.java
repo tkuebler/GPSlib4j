@@ -1,5 +1,6 @@
 package com.diddlebits.gpslib4j.test;
 import javax.comm.*;
+
 import java.util.Enumeration;
 
 public class listPorts {	
@@ -28,11 +29,11 @@ public class listPorts {
 			CommPortIdentifier id = (CommPortIdentifier) e.nextElement();
 			System.out.print( id.getName());
 			System.out.print(" Owner: " + id.getCurrentOwner());
-			if (id.getPortType() == id.PORT_SERIAL) {
+			if (id.getPortType() == CommPortIdentifier.PORT_SERIAL) {
 				System.out.println(" SERIAL");
 			}
 			
-			if (id.getPortType() == id.PORT_PARALLEL) {
+			if (id.getPortType() == CommPortIdentifier.PORT_PARALLEL) {
 				System.out.println(" PARALLEL");
 			}
 			

@@ -1,6 +1,5 @@
 package com.diddlebits.gpslib4j.test;
 import javax.comm.*;
-import java.util.Enumeration;
 import java.io.*;
 
 /**

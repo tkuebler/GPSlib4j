@@ -3,7 +3,6 @@ import javax.comm.*;
 
 import com.diddlebits.gpslib4j.*;
 
-import java.util.Enumeration;
 import java.io.*;
 import com.diddlebits.gpslib4j.Garmin.*;
 /**
