@@ -116,4 +116,12 @@ public class AreaAlarm implements IGPSlistener {
 			}
 		}		
 	}
+
+	/* (non-Javadoc)
+	 * @see com.diddlebits.gpslib4j.IGPSlistener#productInfoReceived()
+	 */
+	public void productInfoReceived(IProductData prod) {
+		// TODO Auto-generated method stub
+		
+	}
 }

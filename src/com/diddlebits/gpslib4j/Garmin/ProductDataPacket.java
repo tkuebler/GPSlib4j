@@ -1,6 +1,8 @@
 package com.diddlebits.gpslib4j.Garmin;
 
-public class ProductDataPacket extends GarminPacket {	
+import com.diddlebits.gpslib4j.IProductData;
+
+public class ProductDataPacket extends GarminPacket implements IProductData {	
 	/** Product-ID of GPS. */
 	protected int productID;
 	/** Software version in GPS.*/
@@ -53,6 +55,22 @@ public class ProductDataPacket extends GarminPacket {
 		res.append("Product ID: " + productID);
 		res.append("\nSoftware version: " + SWversion);
 		return res.toString();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.diddlebits.gpslib4j.IProductData#getVersion()
+	 */
+	public String getVersion() {
+		// TODO Auto-generated method stub
+		return String.valueOf(getSWVersion());
+	}
+
+	/* (non-Javadoc)
+	 * @see com.diddlebits.gpslib4j.IProductData#getId()
+	 */
+	public String getId() {
+		// TODO Auto-generated method stub
+		return String.valueOf(productID);
 	}
 	
 }

@@ -215,6 +215,12 @@ public abstract class GPS {
 			((IGPSlistener) ((Vector)zListeners.get("GPS")).elementAt(i)).timeReceived(time);
 		}	
 	}
+	
+	protected void fireProductData(IProductData prod) {
+		for (int i = 0 ; i < ((Vector)zListeners.get("GPS")).size() ; i++) {
+			((IGPSlistener) ((Vector)zListeners.get("GPS")).elementAt(i)).productInfoReceived(prod);
+		}	
+	}
 
 	/** Makes a request for the specified data to the GPS. Data will be returned to all listeners through the IGPSlistener-interface. */
 	public abstract void requestPosition();

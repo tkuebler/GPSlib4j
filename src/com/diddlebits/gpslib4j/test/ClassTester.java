@@ -86,4 +86,13 @@ public class ClassTester implements IGPSlistener, GarminListener, IWaypointListe
 	public void transferComplete() {
 		System.out.println("Transfer completed.");
 	}
+
+
+	/* (non-Javadoc)
+	 * @see com.diddlebits.gpslib4j.IGPSlistener#productInfoReceived()
+	 */
+	public void productInfoReceived(IProductData prod) {
+		// TODO Auto-generated method stub
+		
+	}
 }

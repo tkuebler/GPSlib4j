@@ -17,4 +17,8 @@ public interface IGPSlistener {
 	public void dateReceived(IDate d);
 	/** Invoked when the GPS transmits position-data. */
 	public void positionReceived(IPosition pos);
+	
+	/** Maybe needs to be a separate interface? */
+	public void productInfoReceived(IProductData prod);
+	
 }

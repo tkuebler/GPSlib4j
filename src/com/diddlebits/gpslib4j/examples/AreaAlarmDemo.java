@@ -112,4 +112,12 @@ public class AreaAlarmDemo extends JFrame implements ActionListener, IGPSlistene
 		System.out.println("Received!");
 		current = pos;
 	}
+
+	/* (non-Javadoc)
+	 * @see com.diddlebits.gpslib4j.IGPSlistener#productInfoReceived()
+	 */
+	public void productInfoReceived(IProductData pd) {
+		// TODO Auto-generated method stub
+		
+	}
 }

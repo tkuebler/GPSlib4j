@@ -142,11 +142,7 @@ public class GarminGPS extends GPS implements Runnable {
 				fireTransferComplete();
 				return;
 			case GarminPacket.Pid_Product_Data :
-				System.out.println("Product data arrived!");
-				ProductDataPacket pp = new ProductDataPacket(p);
-				description = pp.getDescription();
-				description += "\nSoftware version: " + pp.getSWVersion();
-				description += "\nProduct ID: " + pp.getProductID();
+				fireProductData(new ProductDataPacket(p));
 				fireTransferComplete();
 				return;
 			case GarminPacket.Pid_Protocol_Array :

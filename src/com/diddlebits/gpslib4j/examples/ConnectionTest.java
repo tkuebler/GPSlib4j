@@ -7,7 +7,6 @@ import javax.comm.*;
 import com.diddlebits.gpslib4j.*;
 
 import java.util.Enumeration;
-import java.util.Properties;
 import java.util.Vector;
 import java.io.*;
 
@@ -276,6 +275,8 @@ public class ConnectionTest implements IGPSlistener, IWaypointListener,
 				+ ((TrackpointDataPacket) tp).toString() + " : "
 				+ ((TrackpointDataPacket) tp).getRawPacket());
 		count = 0;
+		
+		
 	}
 
 	/*
@@ -316,5 +317,24 @@ public class ConnectionTest implements IGPSlistener, IWaypointListener,
 				+ ((LapDataPacket) lp).toString() + " : "
 				+ ((LapDataPacket) lp).getRawPacket());
 		count = 0;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.diddlebits.gpslib4j.IGPSlistener#productInfoReceived()
+	 */
+	public void productInfoReceived(IProductData dp) {
+		// TODO Auto-generated method stub
+		System.out.println("Product Info received: "
+				+ ((ProductDataPacket) dp).toString() + " : "
+				+ ((ProductDataPacket) dp).getRawPacket());
+		count = 0;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.diddlebits.gpslib4j.IGPSlistener#productInfoReceived()
+	 */
+	public void productInfoReceived() {
+		// TODO Auto-generated method stub
+		
 	}
 }
