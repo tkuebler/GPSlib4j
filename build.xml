@@ -39,9 +39,9 @@
 	</target>
 	
 	<target name="test" depends="compile">	
-                <echo> Not working for some reason, use command line instead like the following:
+                <echo> Not working cause of ant i/o silliness, use command line instead like the following:
 
-			java -Djava.library.path=lib/MacOSX -classpath lib/comm.jar:lib/GPSLib4J.jar:lib/MacOSX/jcl.jar:lib/MacOSX/RXTXcomm.jar com.diddlebits.gpslib4j.examples.ConnectionTest
+			java -Djava.library.path=lib/${os} -classpath lib/comm.jar:lib/GPSlib4J.jar:lib/${os}/jcl.jar:lib/${os}/RXTXcomm.jar com.diddlebits.gpslib4j.examples.ConnectionTest
 
 		</echo>
 		<!--
@@ -53,7 +53,7 @@
 	</target>
 	
 	<target name="jar">
-		<jar destfile="${libdir}/GPSLib4J.jar"
+		<jar destfile="${libdir}/GPSlib4J.jar"
 			basedir="${builddir}"
 		/>
 	</target>

@@ -1,10 +1,15 @@
 Quick Start:
 
-Mac OS X: type 'ant test'
+Mac OS X: 
+
+1) copy build.properties.example to build.properties and edit to taste
+2) type 'ant test'
+
 
 Other OSes:  
 
 1) download and install RXTX for your platform into the lib directory under the appropriate OS subdirectory
+2) copy build.properties.example to build.properties and edit to taste
 2) type 'ant test'
 
 
