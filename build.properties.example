@@ -1,0 +1,26 @@
+# GPSLib4J - properties file
+#
+# $Source$
+# $Id$
+# $Name$
+
+#
+# OS Version  [MacOSX|Windows|Linux|...]
+#
+# This indicates which subdirectory under lib that ant should look for the
+# platform specific native libraries
+#
+os = MacOSX
+
+#
+# Native library name, this gets added to the LD_LIBRARY_PATH or equivalent
+#
+native.lib = librxtxSerial.jnilib
+
+# 
+# standard stuff, usually don't edit
+#
+builddir = build
+libdir = lib
+docdir = doc/javadoc
+srcdir = src

@@ -1,0 +1,70 @@
+<project name="gpslib" default="compile">
+
+	<property file="build.properties"/>
+
+	<target name="init">
+		<tstamp/>
+		<mkdir dir="${builddir}"/>
+		<mkdir dir="${docdir}"/>
+		
+	</target>
+
+	<path id="compile.classpath">
+		<pathelement path="${classpath}"/>
+			<fileset dir="${libdir}">
+				<include name="**/*.jar"/>
+			</fileset>
+			<fileset dir="${libdir}/${os}/">
+				<include name="**/*.jar"/>
+				<include name="**/*.jnilib"/>
+				<include name="**/*.dll"/>
+			</fileset>
+	</path>	
+
+	<path id="run.classpath">
+		<pathelement path="${classpath}"/>
+			<fileset dir="lib">
+				<include name="**/*.jar"/>
+			</fileset>
+			<fileset dir="lib/${os}/">
+				<include name="**/*.jar"/>
+				<include name="**/*.jnilib"/>
+			</fileset>
+		<pathelement path="${builddir}"/>
+	</path>	
+
+	<target name="compile" depends="init">	
+		<javac destdir="${builddir}" source="1.4">
+			<src path="src"/>
+			<include name="**"/>
+			<classpath refid="compile.classpath"/>
+		</javac>		
+	</target>
+	
+	<target name="jar">
+		<jar destfile="${libdir}/GPSlib4J.jar"
+			basedir="${builddir}"
+		/>
+	</target>
+	<target name="clean">
+		<delete dir="${builddir}"/>
+		<delete dir="${docdir}"/>
+	</target>
+
+	<target name="doc" depends="init">
+		<javadoc packagenames="com.diddlebits.gpslib4j.*"
+		       sourcepath="src"
+		       excludepackagenames="javax.comm.*,com.diddlebits.gpslib4j.test.*"
+		       defaultexcludes="yes"
+		       destdir="${docdir}"
+		       author="true"
+		       version="true"
+		       use="true"
+		       windowtitle="GPS API">
+		</javadoc>
+	</target>
+
+	<target name="all" depends="clean, compile, jar, doc">
+	</target>
+
+</project>
