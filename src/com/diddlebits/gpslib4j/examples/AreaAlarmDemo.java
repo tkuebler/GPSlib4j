@@ -101,7 +101,7 @@ public class AreaAlarmDemo extends JFrame implements ActionListener, IGPSlistene
 				
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(320,200);
-		setLocationRelativeTo(null);				
+		//setLocationRelativeTo(null);				
 		show();
 		
 		System.out.println(gps.getDescription());

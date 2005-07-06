@@ -13,7 +13,7 @@ Other OSes:
 2) type 'ant test'
 
 
-This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/). 
+This code is based on Henrik Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/). 
 
 Please look in the doc directory for more information on building, etc.
 
