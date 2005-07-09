@@ -1,34 +1,42 @@
 package com.diddlebits.gpslib4j.Garmin;
 
+import com.diddlebits.gpslib4j.GPSFields;
+import com.diddlebits.gpslib4j.InvalidFieldValue;
+
 /**
-* This packet is transmitted between devices before a large transfer of data-units, ie. a transfer of waypoints.
-* 
-* This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
-*/
+ * This packet is transmitted between devices before a large transfer of
+ * data-units, ie. a transfer of waypoints.
+ * 
+ */
 public class RecordsPacket extends GarminPacket {
-	/** The number of records to come, that this packet announces. */
-	protected int number;
-	
-	public RecordsPacket(int[] p) {
-		super(p);
-		
-		if (getID() != Pid_Records) {
-			throw(new PacketNotRecognizedException(Pid_Records, getID()));
-		}
-		
-		if (getDataLength() != 2) {
-			throw(new InvalidPacketException(packet, 2));
-		}
-		
-		number = readWord(3);		
-	}
-	
-	public RecordsPacket(GarminPacket p) {
-		this(p.packet);
-	}
-	
-	/** Returns the number of records that this packet announces. */
-	public int getNumber() {
-		return number;
-	}
+    /** The number of records to come, that this packet announces. */
+    protected int number;
+
+    public RecordsPacket(GarminRawPacket p) {
+        super();
+
+        if (p.getID() != GarminRawPacket.Pid_Records) {
+            throw (new PacketNotRecognizedException(
+                    GarminRawPacket.Pid_Records, p.getID()));
+        }
+
+        if (p.getDataLength() != 2) {
+            throw (new InvalidPacketException(p.packet, 2));
+        }
+
+        initFromRawPacket(p);
+    }
+
+    /** Returns the number of records that this packet announces. */
+    public int getNumber() {
+        return number;
+    }
+
+    protected void visit(GarminGPSDataVisitor visitor) throws InvalidFieldValue {
+        visitor.intField(UINT16, GPSFields.NumberField, number, 0, 0xFFFF, 0x10000);
+    }
+
+    public String getPacketType() {
+        return "records";
+    }
 }

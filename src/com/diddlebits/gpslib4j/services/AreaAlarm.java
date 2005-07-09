@@ -1,4 +1,5 @@
 package com.diddlebits.gpslib4j.services;
+import java.io.IOException;
 import java.util.Vector;
 
 import com.diddlebits.gpslib4j.*;
@@ -7,8 +8,6 @@ import com.diddlebits.gpslib4j.*;
 * This class implements an AreaAlarm-service. The class allows the user to specify two positions, which
 * will be used as opposite corners in a rectangular area. Whenever the GPS enters or exits the area all 
 * listeners are notified through the IAlarmListener-interface.
-* 
-* This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
 */
 public class AreaAlarm implements IGPSlistener {
 	private GPS gps; 
@@ -21,7 +20,7 @@ public class AreaAlarm implements IGPSlistener {
 	private Vector alarmListeners;				
 	private boolean inside; 
 	
-	public AreaAlarm(GPS g, Position p1, Position p2) {		
+	public AreaAlarm(GPS g, Position p1, Position p2) throws FeatureNotSupportedException, IOException {		
 		gps = g;
 		gps.setAutoTransmit(true);
 		gps.addGPSlistener(this);
@@ -94,36 +93,28 @@ public class AreaAlarm implements IGPSlistener {
 		}				
 	}
 	
-	public void timeReceived(ITime t) {}
-	
-	public void dateReceived(IDate d) {}
-	
 	public void positionReceived(IPosition pos) {
 		System.out.println("Areaalarm: Received pos. Analyzing!");
-		if (inside == false) {			
-			if ( 	(pos.getLatitude().greaterThan(left_latitude)) && 
-					(pos.getLatitude().smallerThan(right_latitude)) &&
-					(pos.getLongitude().greaterThan(bottom_longitude)) &&
-					(pos.getLongitude().smallerThan(top_longitude))) {
+        Position position = pos.getPosition();
+		if (inside == false) {
+			if ( 	(position.getLatitude().greaterThan(left_latitude)) && 
+					(position.getLatitude().smallerThan(right_latitude)) &&
+					(position.getLongitude().greaterThan(bottom_longitude)) &&
+					(position.getLongitude().smallerThan(top_longitude))) {
 				inside = true;
 				fireInside();				
 			}
 		} else {
-			if (   !((pos.getLatitude().greaterThan(left_latitude)) && 
-					(pos.getLatitude().smallerThan(right_latitude)) &&
-					(pos.getLongitude().greaterThan(bottom_longitude)) &&
-					(pos.getLongitude().smallerThan(top_longitude)))) {
+			if (   !((position.getLatitude().greaterThan(left_latitude)) && 
+					(position.getLatitude().smallerThan(right_latitude)) &&
+					(position.getLongitude().greaterThan(bottom_longitude)) &&
+					(position.getLongitude().smallerThan(top_longitude)))) {
 				inside = false;
 				fireOutside();
 			}
 		}		
 	}
 
-	/* (non-Javadoc)
-	 * @see com.diddlebits.gpslib4j.IGPSlistener#productInfoReceived()
-	 */
-	public void productInfoReceived(IProductData prod) {
-		// TODO Auto-generated method stub
-		
-	}
+    public void timeDateReceived(ITimeDate d) {
+    }
 }

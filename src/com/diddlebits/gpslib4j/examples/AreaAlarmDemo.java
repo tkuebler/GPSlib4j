@@ -5,14 +5,15 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 import java.io.*;
+
 import javax.comm.*;
 
 import com.diddlebits.gpslib4j.*;
 
-/** This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/). */
-
 public class AreaAlarmDemo extends JFrame implements ActionListener, IGPSlistener, IAlarmListener {
-	GPS gps;		
+    private static final long serialVersionUID=-6016081676813267654L;
+
+    GPS gps;		
 	AreaAlarm alarm;
 	Position pos1 = null, pos2 = null;
 	IPosition current = null;	
@@ -41,10 +42,16 @@ public class AreaAlarmDemo extends JFrame implements ActionListener, IGPSlistene
 		}
 		
 		if ( (pos1 != null) && (pos2 != null) ) {
-			indicator.setText("Not inside area.");
-			alarm = new AreaAlarm(gps, pos1, pos2);
-			alarm.addAlarmListener(this);
-			gps.removeGPSListener(this);
+			try {
+                alarm = new AreaAlarm(gps, pos1, pos2);
+                indicator.setText("Not inside area.");
+                alarm.addAlarmListener(this);
+                gps.removeGPSListener(this);
+            } catch (FeatureNotSupportedException e1) {
+                e1.printStackTrace();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
 		}
 	}
 		
@@ -80,8 +87,14 @@ public class AreaAlarmDemo extends JFrame implements ActionListener, IGPSlistene
 		}		
 				
 		gps = new GarminGPS(input, output);
-		gps.setAutoTransmit(true);
-		gps.addGPSlistener(this);
+        gps.addGPSlistener(this);
+		try {
+            gps.setAutoTransmit(true);
+        } catch (FeatureNotSupportedException e) {
+            System.out.println("AutoTransmit mode not supported by this GPS");
+        } catch (IOException e) {
+            System.out.println("Communication error");
+        }
 		
 		
 		indicator = new JLabel("Nothing recorded yet.", JLabel.CENTER);
@@ -101,25 +114,18 @@ public class AreaAlarmDemo extends JFrame implements ActionListener, IGPSlistene
 				
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(320,200);
-		//setLocationRelativeTo(null);				
-		show();
+		setLocationRelativeTo(null);				
+		setVisible(true);
 		
 		System.out.println(gps.getDescription());
 	}		
 		
-	public void timeReceived(ITime t) {}
-	public void dateReceived(IDate d) {}
-	
 	public void positionReceived(IPosition pos) {
 		System.out.println("Received!");
 		current = pos;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.diddlebits.gpslib4j.IGPSlistener#productInfoReceived()
-	 */
-	public void productInfoReceived(IProductData pd) {
-		// TODO Auto-generated method stub
-		
-	}
+    public void timeDateReceived(ITimeDate d)
+    {
+    }
 }

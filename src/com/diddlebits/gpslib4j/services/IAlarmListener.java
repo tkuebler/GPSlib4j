@@ -2,8 +2,6 @@ package com.diddlebits.gpslib4j.services;
 
 /**
 * This interface allows a class to listen on an AreaAlarm. 
-* 
-* This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
 */
 public interface IAlarmListener {
 	/**
