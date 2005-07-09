@@ -7,19 +7,13 @@
 package com.diddlebits.gpslib4j;
 
 /**
- * @author tkuebler
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Common interface for trackpoint packets.
  * 
- * This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
+ * @author tkuebler
  */
-public interface ITrackpoint {
-	public Position getPosition();
-	public long getTime();
-	public float getAltitude();
-	
-	// header methods
-	public boolean isHeader();
-	public int getIndex();
+public interface ITrackpoint extends IGPSData, ITimeDate {
+    /**
+     * @return The position of the trackpoint.
+     */
+    public Position getPosition();
 }

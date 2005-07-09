@@ -6,27 +6,32 @@
  */
 package com.diddlebits.gpslib4j;
 
+import java.util.Date;
+
 /**
- * @author tkuebler
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Defines the common methods of lap packets.
  * 
- * This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
+ * @author tkuebler
  */
-public interface ILap {
-	public long getStartTime();
-	/** total time */
-	public long getTotalTime();
-	/** total_distance */
-	public float getTotalDistance();
-	/** begin point */
-	public Position getStartPosition();
-	/** end point */
-	public Position getEndPosition();
-	/** calories */
-	public int getCalories();
-	/** track index */
-	public short getTrackIndex();
+public interface ILap extends IGPSData {
+    public Date getStartTime();
+
+    /** total time */
+    public long getTotalTime();
+
+    /** total_distance */
+    public float getTotalDistance();
+
+    /** begin point */
+    public Position getStartPosition();
+
+    /** end point */
+    public Position getEndPosition();
+
+    /** calories */
+    public int getCalories();
+
+    /** track index */
+    public short getTrackIndex();
 
 }

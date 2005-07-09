@@ -1,12 +1,9 @@
 package com.diddlebits.gpslib4j;
 
 /**
-* Thrown by methods in classes extending the GPS-class, if the implemented GPS-unit does not support the feature 
-* requested in the method. 
-* 
-* This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
-*/ 
-
-public class FeatureNotSupportedException extends RuntimeException {
-	
+ * Thrown by methods in classes extending the GPS-class, if the implemented
+ * GPS-unit does not support the feature requested in the method.
+ */
+public class FeatureNotSupportedException extends Exception {
+    private static final long serialVersionUID = -6810576254175691377L;
 }

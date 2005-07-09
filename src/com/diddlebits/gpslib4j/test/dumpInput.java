@@ -5,8 +5,6 @@ import java.io.*;
 
 /** 
 * This class is made to establish simple communication with the GPS. (Ev. 2)
-* 
-* This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
 */
 
 public class dumpInput {	

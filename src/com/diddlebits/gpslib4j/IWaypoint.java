@@ -1,7 +1,11 @@
 package com.diddlebits.gpslib4j;
 
-/** This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/). */
-
+/**
+ * Common interface for waypoint packets.
+ */
 public interface IWaypoint extends IPosition {
-	public String getName();
+    /**
+     * @return The identity of the waypoint.
+     */
+    public String getIdent();
 }

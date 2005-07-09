@@ -1,7 +1,4 @@
 package com.diddlebits.gpslib4j.test;
-
-/** This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/). */
-
 import javax.comm.*;
 
 import java.util.Enumeration;

@@ -1,7 +1,4 @@
 package com.diddlebits.gpslib4j.test;
-
-/** This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/). */
-
 import javax.comm.*;
 import java.io.*;
 
@@ -342,7 +339,7 @@ public class packetReader {
 		int degrees = (int) deg;
 		double minutes = deg - degrees;
 		minutes *= 60;		
-		res.append("Pos: " + degrees +"°" + minutes + "'\n");
+		res.append("Pos: " + degrees +"?" + minutes + "'\n");
 		
 		for (int i = 0 ; i < 8 ; i++) {
 			data[i] = packet[i + 11];
@@ -353,7 +350,7 @@ public class packetReader {
 		degrees = (int) deg;
 		minutes = deg - degrees;
 		minutes *= 60;		
-		res.append("Pos: " + degrees +"°" + minutes + "'\n");
+		res.append("Pos: " + degrees +"?" + minutes + "'\n");
 		
 		
 		return res.toString();

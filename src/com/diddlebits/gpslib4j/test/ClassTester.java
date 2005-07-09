@@ -4,11 +4,11 @@ import javax.comm.*;
 import com.diddlebits.gpslib4j.*;
 
 import java.io.*;
+
 import com.diddlebits.gpslib4j.Garmin.*;
+
 /**
 * Class made to be able to test the classes of the com.diddlebits.gpslib4j-package.
-* 
-* This code is based on Henirk Aasted Sorensen's dk.itu.haas.GPS library (http://www.aasted.org/gps/).
 */
 public class ClassTester implements IGPSlistener, GarminListener, IWaypointListener {	
 	public static void main(String args[]) {
@@ -47,38 +47,39 @@ public class ClassTester implements IGPSlistener, GarminListener, IWaypointListe
 		gps.addWaypointListener(this);
 		( (GarminGPS) gps).addGarminListener(this);
 		
-		gps.requestWaypoints();
+		try {
+            gps.requestWaypoints();
+        } catch (FeatureNotSupportedException e1) {
+            System.out.println("Waypoint feature not supported");
+        } catch (IOException e1) {
+            System.out.println("Communication error while requesting the waypoints");
+        }
 		
 		// gps.setAutoTransmit(true);		
 		
 		try {Thread.sleep(1000); } catch (InterruptedException e) {}
 		
-		// gps.setAutoTransmit(false);		
-		gps.shutdown(false);
-	}
-	
-	/** Invoked when the GPS transmits time-data. */
-	public void timeReceived(ITime t) {
-		System.out.println("Time: " + t.getHours() + ':' + t.getMinutes() + ':' + t.getSeconds());
-	}
-	
-	/** Invoked when the GPS transmits date-data. */
-	public void dateReceived(IDate d) {
-		System.out.println("Date: " + d.getMonth() + '/' + d.getDay() + '-' + d.getYear());
+		// gps.setAutoTransmit(false);
+        try {
+    		gps.shutdown(false);
+        } catch (FeatureNotSupportedException e1) {
+            System.out.println("Shutdown not supported");
+        } catch (IOException e1) {
+            System.out.println("Communication error while requesting a shutdown");
+        }
 	}
 	
 	/** Invoked when the GPS transmits position-data. */
 	public void positionReceived(IPosition pos) {
 		System.out.println("Received Position.");
 	}
-	public void GarminPacketReceived(GarminPacket p) {
+	public void garminPacketReceived(GarminPacket p) {
 	}
 	
 	public void waypointReceived(IWaypoint wp) {		
 		System.out.println("Received waypoint.");
-		System.out.println(" - Identifier: " + wp.getName());
-		System.out.println(" - Latitude: " + wp.getLatitude().toString());
-		System.out.println(" - Longitude: " + wp.getLongitude().toString());
+		System.out.println(" - Identifier: " + wp.getIdent());
+		System.out.println(" - Position: " + wp.getPosition().toString());
 	}
 		
 	public void transferStarted(int number) {
@@ -90,11 +91,16 @@ public class ClassTester implements IGPSlistener, GarminListener, IWaypointListe
 	}
 
 
-	/* (non-Javadoc)
-	 * @see com.diddlebits.gpslib4j.IGPSlistener#productInfoReceived()
-	 */
-	public void productInfoReceived(IProductData prod) {
-		// TODO Auto-generated method stub
-		
-	}
+    public void errorReceived(Exception e)
+    {
+        System.out.println("Error received:");
+        System.out.println(e.toString());
+    }
+
+
+    /** Invoked when the GPS transmits time-data. */
+    public void timeDateReceived(ITimeDate d)
+    {
+        System.out.println("Date: " + d.getTime().toString());
+    }
 }
