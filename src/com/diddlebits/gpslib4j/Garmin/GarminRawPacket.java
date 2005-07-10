@@ -73,7 +73,8 @@ public class GarminRawPacket extends GarminPacket {
     /**
      * Creates a new GarminPacket with the contents of p. Throws
      * InvalidPacketException if packet is malformed.
-     * @throws InvalidPacketException 
+     * 
+     * @throws InvalidPacketException
      */
     public GarminRawPacket(int[] p) throws InvalidPacketException {
         this(p, false);
@@ -83,10 +84,12 @@ public class GarminRawPacket extends GarminPacket {
      * Creates a new GarminPacket with the contents of p. if calcChecksum is
      * true, the packet will have it's checksum recalculated. Throws
      * InvalidPacketException if packet is malformed.
-     * @throws InvalidPacketException 
+     * 
+     * @throws InvalidPacketException
      */
 
-    public GarminRawPacket(int[] p, boolean calcChecksum) throws InvalidPacketException {
+    public GarminRawPacket(int[] p, boolean calcChecksum)
+            throws InvalidPacketException {
         packet = (int[]) p.clone();
 
         if (calcChecksum) {
@@ -94,7 +97,8 @@ public class GarminRawPacket extends GarminPacket {
         }
 
         if (isLegal() != -1) {
-            System.out.println("Error in byte: " + isLegal()+ "/" + packet.length);
+            System.out.println("Error in byte: " + isLegal() + "/"
+                    + packet.length);
             throw (new InvalidPacketException(p, isLegal()));
         }
     }
@@ -111,9 +115,11 @@ public class GarminRawPacket extends GarminPacket {
      * </ul>
      * The argument <i>data </i> is an array of int that will be put in the
      * data-field of the packet.
-     * @throws InvalidPacketException 
+     * 
+     * @throws InvalidPacketException
      */
-    public static GarminRawPacket createBasicPacket(int type, int[] data) throws InvalidPacketException {
+    public static GarminRawPacket createBasicPacket(int type, int[] data)
+            throws InvalidPacketException {
         switch (type) {
         case Pid_Ack_Byte:
         case Pid_Nak_Byte:
@@ -149,6 +155,7 @@ public class GarminRawPacket extends GarminPacket {
         sum = sum % 256;
         sum = sum ^ 255;
         sum += 1;
+        sum = sum % 256;
         return sum;
     }
 
@@ -203,9 +210,11 @@ public class GarminRawPacket extends GarminPacket {
      * <li>Cmnd_Start_Pvt_Data
      * <li>Cmnd_Stop_Pvt_Data
      * </ul>
-     * @throws InvalidPacketException 
+     * 
+     * @throws InvalidPacketException
      */
-    public static GarminRawPacket createCommandPacket(int type) throws InvalidPacketException {
+    public static GarminRawPacket createCommandPacket(int type)
+            throws InvalidPacketException {
         System.out.println("Sending command " + type);
         return new GarminRawPacket(new int[] { GarminRawPacket.DLE,
                 GarminRawPacket.Pid_Command_Data, 2, type, 0, 0,
