@@ -17,8 +17,10 @@ public class ProductDataPacket extends GarminPacket {
     /**
      * Treats the packet p as a packet containing product-data. Throws
      * PacketNotRecognizedException if p is not a product-data-packet.
+     * @throws PacketNotRecognizedException 
+     * @throws InvalidFieldValue 
      */
-    public ProductDataPacket(GarminRawPacket p) {
+    public ProductDataPacket(GarminRawPacket p) throws PacketNotRecognizedException, InvalidFieldValue {
         super();
         if (p.getID() != GarminRawPacket.Pid_Product_Data) {
             throw (new PacketNotRecognizedException(

@@ -37,8 +37,10 @@ public class LapDataPacket906 extends GarminPacket implements ILap {
     /**
      * Throws a PacketNotRecognizedException if the lap-dataformat is not
      * implemented.
+     * @throws PacketNotRecognizedException 
+     * @throws InvalidFieldValue 
      */
-    public LapDataPacket906(GarminRawPacket p) {
+    public LapDataPacket906(GarminRawPacket p) throws PacketNotRecognizedException, InvalidFieldValue {
         super();
 
         if (p.getID() != GarminRawPacket.Pid_Lap) {

@@ -42,7 +42,7 @@ public class ClassTester implements IGPSlistener, GarminListener, IWaypointListe
 			return;
 		}
 		
-		GPS gps = new GarminGPS(input, output);
+		GPS gps = new GarminGPS(input, output, this);
 		gps.addGPSlistener(this);
 		gps.addWaypointListener(this);
 		( (GarminGPS) gps).addGarminListener(this);

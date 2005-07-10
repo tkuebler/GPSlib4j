@@ -42,8 +42,10 @@ public class PVTDataPacket800 extends GarminPacket implements IPosition {
      * Treats the packet p as a packet containing PVT-data. Throws
      * PacketNotRecognizedException if p is not a PVT-packet. Throws
      * InvalidPacketException if the packet contains too little data.
+     * @throws PacketNotRecognizedException 
+     * @throws InvalidFieldValue 
      */
-    public PVTDataPacket800(GarminRawPacket p) {
+    public PVTDataPacket800(GarminRawPacket p) throws PacketNotRecognizedException, InvalidFieldValue {
         super();
 
         if (p.getID() != GarminRawPacket.Pid_Pvt_Data) {

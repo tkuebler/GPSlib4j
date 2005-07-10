@@ -12,16 +12,16 @@ import com.diddlebits.gpslib4j.*;
  */
 public class GarminGPS extends GPS implements Runnable {
     /** Communication input stream */
-    GarminInputStream input;
+    protected GarminInputStream input;
 
     /** Communication output stream */
-    GarminOutputStream output;
+    protected GarminOutputStream output;
 
     /** A human-readable description of the GPS-unit. */
     protected String description;
 
     /** The listening thread */
-    Thread listener;
+    protected Thread listener;
 
     /**
      * The listening thread will be active as long as this variable remains
@@ -30,15 +30,16 @@ public class GarminGPS extends GPS implements Runnable {
     protected boolean active;
 
     /** What is the current request */
-    int currentTask = -1;
+    protected int currentTask = -1;
 
     /** The number of records we are going to receive */
-    int records = 0;
+    protected int records = 0;
 
     /** A vector containing references to all the GarminListeners. */
     protected Vector GarminListeners;
-
-    public GarminGPS(BufferedInputStream i, BufferedOutputStream o) {
+    
+    public GarminGPS(BufferedInputStream i, BufferedOutputStream o, ITransferListener toNotifyWhenInit) {
+        super(toNotifyWhenInit);
         input = new GarminInputStream(i);
         output = new GarminOutputStream(o);
         listener = new Thread(this);
@@ -46,6 +47,10 @@ public class GarminGPS extends GPS implements Runnable {
         active = true;
         GarminListeners = new Vector();
 
+        startConnect();
+    }
+    
+    private void startConnect() {
         // Request product information.
         try {
             // abort any current transfer
@@ -54,8 +59,13 @@ public class GarminGPS extends GPS implements Runnable {
             output.write(GarminRawPacket.createBasicPacket(
                     GarminRawPacket.Pid_Product_Rqst, new int[] {}));
         } catch (IOException e) {
+        } catch (InvalidPacketException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
+    
+    
 
     /**
      * Adds the specified GarminListener to receive all packets sent from the
@@ -106,6 +116,7 @@ public class GarminGPS extends GPS implements Runnable {
                 active = false;
                 return;
             } catch (InvalidPacketException e) {
+                fireError(e);
                 // Send back a NAK-packet.
                 try {
                     output.write(GarminRawPacket.createBasicPacket(
@@ -113,6 +124,13 @@ public class GarminGPS extends GPS implements Runnable {
                                     pack.getID(), 0 }));
                 } catch (IOException ex) {
                     active = false;
+                    fireError(ex);
+                    return;
+                } catch (InvalidPacketException ex) {
+                    // TODO Auto-generated catch block
+                    ex.printStackTrace();
+                    active = false;
+                    fireError(ex);
                     return;
                 }
             }
@@ -133,15 +151,21 @@ public class GarminGPS extends GPS implements Runnable {
                     }
                 }
             } catch (Exception e) {
+                // notify the listeners about the error
+                fireError(e);
+
                 try {
                     output.write(GarminRawPacket.createBasicPacket(
                             GarminRawPacket.Pid_Nak_Byte, new int[] {
                                     pack.getID(), 0 }));
                 } catch (IOException io) {
                     active = false;
+                    fireError(io);
+                } catch (InvalidPacketException ex) {
+                    // TODO Auto-generated catch block
+                    ex.printStackTrace();
+                    fireError(ex);
                 }
-                // notify the listeners about the error
-                fireError(e);
             }
         } // End of while
     }
@@ -151,10 +175,13 @@ public class GarminGPS extends GPS implements Runnable {
      * distribute it to the correct listeners.
      * 
      * @return True if an acknoledge is requested
+     * @throws InvalidFieldValue 
+     * @throws PacketNotRecognizedException 
+     * @throws InvalidPacketException 
      */
     protected int distribute(GarminRawPacket p)
             throws ProtocolNotRecognizedException,
-            ProtocolNotSupportedException {
+            ProtocolNotSupportedException, PacketNotRecognizedException, InvalidFieldValue, InvalidPacketException {
         switch (p.getID()) {
         case GarminRawPacket.Pid_Position_Data:
             firePositionData(GarminFactory.Get().createPosition(p));
@@ -200,19 +227,25 @@ public class GarminGPS extends GPS implements Runnable {
             description = pp.getDescription();
             description += "\nSoftware version: " + pp.getSWVersion();
             description += "\nProduct ID: " + pp.getProductID();
-            fireTransferComplete();
+            System.out.println("Got product");
+            if(!GarminFactory.isWaitingForProtocolData()) {
+                //we don't expect protocol array => init is done
+                fireTransferComplete();
+            }
             return GarminRawPacket.Pid_Ack_Byte;
         case GarminRawPacket.Pid_Protocol_Array:
             description += "\nProtocols supported:\n";
             description += (GarminFactory.Get()
                     .createProtocolArrayAndInitFromIt(p)).toString();
+            System.out.println("Got protocol");
+            fireTransferComplete();
             return GarminRawPacket.Pid_Ack_Byte;
         case GarminRawPacket.Pid_Ack_Byte:
             // ack packet
             // System.out.println("ACK received");
             if (currentTask >= 0) {
                 // case of empty data type
-                fireTransferComplete();
+                //fireTransferComplete();
             }
             return -1;
         default:
@@ -230,7 +263,13 @@ public class GarminGPS extends GPS implements Runnable {
             IOException {
         currentTask = GarminFactory.Get().getCommandId(
                 GarminFactory.CmndTransferPosn);
-        output.write(GarminRawPacket.createCommandPacket(currentTask));
+        try {
+            output.write(GarminRawPacket.createCommandPacket(currentTask));
+        } catch (InvalidPacketException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new FeatureNotSupportedException();
+        }
     }
 
     /**
@@ -240,7 +279,13 @@ public class GarminGPS extends GPS implements Runnable {
     public void requestTime() throws FeatureNotSupportedException, IOException {
         currentTask = GarminFactory.Get().getCommandId(
                 GarminFactory.CmndTransferTime);
-        output.write(GarminRawPacket.createCommandPacket(currentTask));
+        try {
+            output.write(GarminRawPacket.createCommandPacket(currentTask));
+        } catch (InvalidPacketException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new FeatureNotSupportedException();
+        }
     }
 
     /**
@@ -250,7 +295,13 @@ public class GarminGPS extends GPS implements Runnable {
     public void requestDate() throws FeatureNotSupportedException, IOException {
         currentTask = GarminFactory.Get().getCommandId(
                 GarminFactory.CmndTransferTime);
-        output.write(GarminRawPacket.createCommandPacket(currentTask));
+        try {
+            output.write(GarminRawPacket.createCommandPacket(currentTask));
+        } catch (InvalidPacketException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new FeatureNotSupportedException();
+        }
     }
 
     /**
@@ -261,7 +312,13 @@ public class GarminGPS extends GPS implements Runnable {
             IOException {
         currentTask = GarminFactory.Get().getCommandId(
                 GarminFactory.CmndTransferWpt);
-        output.write(GarminRawPacket.createCommandPacket(currentTask));
+        try {
+            output.write(GarminRawPacket.createCommandPacket(currentTask));
+        } catch (InvalidPacketException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new FeatureNotSupportedException();
+        }
     }
 
     /**
@@ -272,7 +329,13 @@ public class GarminGPS extends GPS implements Runnable {
             IOException {
         currentTask = GarminFactory.Get().getCommandId(
                 GarminFactory.CmndTransferRte);
-        output.write(GarminRawPacket.createCommandPacket(currentTask));
+        try {
+            output.write(GarminRawPacket.createCommandPacket(currentTask));
+        } catch (InvalidPacketException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new FeatureNotSupportedException();
+        }
     }
 
     /**
@@ -283,7 +346,13 @@ public class GarminGPS extends GPS implements Runnable {
             IOException {
         currentTask = GarminFactory.Get().getCommandId(
                 GarminFactory.CmndTransferTrk);
-        output.write(GarminRawPacket.createCommandPacket(currentTask));
+        try {
+            output.write(GarminRawPacket.createCommandPacket(currentTask));
+        } catch (InvalidPacketException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new FeatureNotSupportedException();
+        }
     }
 
     /**
@@ -293,7 +362,13 @@ public class GarminGPS extends GPS implements Runnable {
     public void requestLaps() throws FeatureNotSupportedException, IOException {
         currentTask = GarminFactory.Get().getCommandId(
                 GarminFactory.CmndTransferLaps);
-        output.write(GarminRawPacket.createCommandPacket(currentTask));
+        try {
+            output.write(GarminRawPacket.createCommandPacket(currentTask));
+        } catch (InvalidPacketException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new FeatureNotSupportedException();
+        }
     }
 
     /**
@@ -304,14 +379,20 @@ public class GarminGPS extends GPS implements Runnable {
      */
     public void setAutoTransmit(boolean t) throws FeatureNotSupportedException,
             IOException {
-        if (t) {
-            currentTask = GarminFactory.Get().getCommandId(
-                    GarminFactory.CmndStartPvtData);
-            output.write(GarminRawPacket.createCommandPacket(currentTask));
-        } else {
-            currentTask = GarminFactory.Get().getCommandId(
-                    GarminFactory.CmndStopPvtData);
-            output.write(GarminRawPacket.createCommandPacket(currentTask));
+        try { 
+            if (t) {
+                currentTask = GarminFactory.Get().getCommandId(
+                        GarminFactory.CmndStartPvtData);
+                output.write(GarminRawPacket.createCommandPacket(currentTask));
+            } else {
+                currentTask = GarminFactory.Get().getCommandId(
+                        GarminFactory.CmndStopPvtData);
+                output.write(GarminRawPacket.createCommandPacket(currentTask));
+            }
+        } catch (InvalidPacketException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            throw new FeatureNotSupportedException();
         }
     }
 
@@ -326,7 +407,13 @@ public class GarminGPS extends GPS implements Runnable {
         if (b) {
             currentTask = GarminFactory.Get().getCommandId(
                     GarminFactory.CmndTurnOffPwr);
-            output.write(GarminRawPacket.createCommandPacket(currentTask));
+            try {
+                output.write(GarminRawPacket.createCommandPacket(currentTask));
+            } catch (InvalidPacketException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                throw new FeatureNotSupportedException();
+            }
         }
         active = false;
     }

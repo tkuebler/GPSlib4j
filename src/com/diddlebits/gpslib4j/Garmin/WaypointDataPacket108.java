@@ -75,10 +75,11 @@ public class WaypointDataPacket108 extends GarminPacket implements IWaypoint {
     /**
      * Throws a PacketNotRecognizedException if the Waypoint-dataformat is not
      * implemented.
+     * @throws InvalidFieldValue 
      */
 
     public WaypointDataPacket108(GarminRawPacket p)
-            throws PacketNotRecognizedException {
+            throws PacketNotRecognizedException, InvalidFieldValue {
         super();
 
         if (p.getID() != GarminRawPacket.Pid_Wpt_Data) {

@@ -14,9 +14,11 @@ public class RouteHeaderPacket202 extends GarminPacket implements IRouteHeader {
     /**
      * Throws a PacketNotRecognizedException if the Trackpoint-dataformat is not
      * implemented.
+     * @throws InvalidFieldValue 
+     * @throws PacketNotRecognizedException 
      */
 
-    public RouteHeaderPacket202(GarminRawPacket p) {
+    public RouteHeaderPacket202(GarminRawPacket p) throws PacketNotRecognizedException, InvalidFieldValue {
         super();
 
         initFromRawPacket(p);

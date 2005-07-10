@@ -16,8 +16,10 @@ public class ProtocolDataPacket extends GarminPacket {
      * Treats the packet p as a packet containing data about which protocols the
      * GPS support. Throws PacketNotRecognizedException if p is not a
      * product-data-packet.
+     * @throws PacketNotRecognizedException 
+     * @throws InvalidPacketException 
      */
-    public ProtocolDataPacket(GarminRawPacket p) {
+    public ProtocolDataPacket(GarminRawPacket p) throws PacketNotRecognizedException, InvalidPacketException {
         super();
         if (p.getID() != GarminRawPacket.Pid_Protocol_Array) {
             throw (new PacketNotRecognizedException(
@@ -45,6 +47,8 @@ public class ProtocolDataPacket extends GarminPacket {
     public ProtocolDataPacket(ProductDataPacket product) {
         // TODO: implement the table 28 in "Garmin Device Interface
         // Specification"
+        tags=new char[0];
+        data = new int[0];
     }
 
     /**

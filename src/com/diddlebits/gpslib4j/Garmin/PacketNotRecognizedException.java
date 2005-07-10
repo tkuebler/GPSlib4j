@@ -7,7 +7,7 @@ package com.diddlebits.gpslib4j.Garmin;
  * because it's assumed that there will in most cases be type-checking of
  * packets.
  */
-public class PacketNotRecognizedException extends RuntimeException {
+public class PacketNotRecognizedException extends Exception {
     private static final long serialVersionUID = -1005456869224746236L;
 
     /**

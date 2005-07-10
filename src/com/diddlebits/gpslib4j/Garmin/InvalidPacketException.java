@@ -4,7 +4,7 @@ package com.diddlebits.gpslib4j.Garmin;
  * This method is thrown from the constructors of the packet-classes, whenever
  * the int[]-array is not formatted according to the Garmin-packet-specs.
  */
-public class InvalidPacketException extends RuntimeException {
+public class InvalidPacketException extends Exception {
     private static final long serialVersionUID = 1681761336692944141L;
 
     private int[] packet;

@@ -15,9 +15,11 @@ public class TrackpointHeaderPacket311 extends GarminPacket implements
     /**
      * Throws a PacketNotRecognizedException if the Trackpoint-dataformat is not
      * implemented.
+     * @throws InvalidFieldValue 
+     * @throws PacketNotRecognizedException 
      */
 
-    public TrackpointHeaderPacket311(GarminRawPacket p) {
+    public TrackpointHeaderPacket311(GarminRawPacket p) throws PacketNotRecognizedException, InvalidFieldValue {
         super();
 
         initFromRawPacket(p);

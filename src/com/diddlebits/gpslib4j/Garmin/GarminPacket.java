@@ -74,14 +74,10 @@ public abstract class GarminPacket {
     }
 
     protected void initFromRawPacket(GarminRawPacket source)
-            throws PacketNotRecognizedException {
+            throws PacketNotRecognizedException, InvalidFieldValue {
 
         GarminGPSDataVisitor visitor = new GarminGPSDataParserVisitor(source);
-        try {
-            source.pointer2start();
-            visit(visitor);
-        } catch (InvalidFieldValue e) {
-            throw new PacketNotRecognizedException(0, 0);
-        }
+        source.pointer2start();
+        visit(visitor);
     }
 }

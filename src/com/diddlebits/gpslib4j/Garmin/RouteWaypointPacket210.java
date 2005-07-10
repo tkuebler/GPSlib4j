@@ -19,9 +19,11 @@ public class RouteWaypointPacket210 extends GarminPacket implements
     /**
      * Throws a PacketNotRecognizedException if the Trackpoint-dataformat is not
      * implemented.
+     * @throws InvalidFieldValue 
+     * @throws PacketNotRecognizedException 
      */
 
-    public RouteWaypointPacket210(GarminRawPacket p) {
+    public RouteWaypointPacket210(GarminRawPacket p) throws PacketNotRecognizedException, InvalidFieldValue {
         super();
 
         initFromRawPacket(p);

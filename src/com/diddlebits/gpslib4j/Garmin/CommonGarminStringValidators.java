@@ -17,7 +17,7 @@ public class CommonGarminStringValidators {
     public CommonGarminStringValidators() throws InvalidFieldValue {
         comment = new RegexpStringValidator("comment", "^[-A-Z0-9 ]*$");
         waypointIdent = new RegexpStringValidator("waypoint indentifier",
-                "^[A-Z0-9]*");
+                "^[A-Z0-9 ]*");
         ident = new RegexpStringValidator("identifer", "^[-A-Z0-9 ]*");
         countryCode = new RegexpStringValidator("country code", "^[-A-Z0-9 ]*$");
     }

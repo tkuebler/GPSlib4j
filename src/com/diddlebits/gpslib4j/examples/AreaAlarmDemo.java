@@ -10,7 +10,7 @@ import javax.comm.*;
 
 import com.diddlebits.gpslib4j.*;
 
-public class AreaAlarmDemo extends JFrame implements ActionListener, IGPSlistener, IAlarmListener {
+public class AreaAlarmDemo extends JFrame implements ActionListener, IGPSlistener, IAlarmListener, ITransferListener {
     private static final long serialVersionUID=-6016081676813267654L;
 
     GPS gps;		
@@ -86,7 +86,7 @@ public class AreaAlarmDemo extends JFrame implements ActionListener, IGPSlistene
 			return;
 		}		
 				
-		gps = new GarminGPS(input, output);
+		gps = new GarminGPS(input, output, this);
         gps.addGPSlistener(this);
 		try {
             gps.setAutoTransmit(true);
@@ -125,7 +125,15 @@ public class AreaAlarmDemo extends JFrame implements ActionListener, IGPSlistene
 		current = pos;
 	}
 
-    public void timeDateReceived(ITimeDate d)
-    {
+    public void timeDateReceived(ITimeDate d) {
+    }
+
+    public void transferStarted(int number) {
+    }
+
+    public void transferComplete() {
+    }
+
+    public void errorReceived(Exception e) {
     }
 }

@@ -84,11 +84,15 @@ public class ConnectionTest implements IGPSlistener, IWaypointListener,
 
         transfering = true;
         try {
-            gps = GPS.CreateInterface(gpsBrand, input, output);
+            gps = GPS.CreateInterface(gpsBrand, input, output, this);
         } catch (FeatureNotSupportedException e) {
             System.out.println("Error creating a driver");
             return;
         }
+
+        System.out.println("Connecting to GPS.");
+        // String description = ((GarminGPS) gps).getDescription();
+        waitForResponse();
 
         gps.addGPSlistener(this);
         gps.addWaypointListener(this);
@@ -96,17 +100,13 @@ public class ConnectionTest implements IGPSlistener, IWaypointListener,
         gps.addLapListener(this);
         gps.addRouteListener(this);
 
-        System.out.println("Connecting to GPS.");
-        // String description = ((GarminGPS) gps).getDescription();
-        waitForResponse();
-
         System.out.println("Connected.");
 
-        testPosition();
-        testRoute();
-        testWaypoint();
+        //testPosition();
+        //testRoute();
+        //testWaypoint();
         testTrack();
-        testLap();
+        //testLap();
         testShutdown();
     }
 
@@ -220,6 +220,10 @@ public class ConnectionTest implements IGPSlistener, IWaypointListener,
             } catch (InterruptedException e1) {
                 e1.printStackTrace();
             }
+        }
+        if(transfering) {
+            System.out.println("Timeout!!!");
+            System.exit(-1);
         }
     }
 
@@ -419,6 +423,7 @@ public class ConnectionTest implements IGPSlistener, IWaypointListener,
     public void errorReceived(Exception e) {
         System.out.println("Error during the communication:");
         System.out.println(e.toString());
+        System.exit(1);
         transfering = false;
     }
 

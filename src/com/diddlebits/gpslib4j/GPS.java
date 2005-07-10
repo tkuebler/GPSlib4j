@@ -44,21 +44,25 @@ public abstract class GPS {
      *            The input stream to use to communicate with the GPS
      * @param o
      *            The output stream to use to communication with the GPS
+     * @param toNotifiyWhenInit
+     *            The object to notify when the connection is done
      * @return The concrete GPS interface.
      * @throws FeatureNotSupportedException
      *             If the brand is unknown.
      */
     public static GPS CreateInterface(String brand, BufferedInputStream i,
-            BufferedOutputStream o) throws FeatureNotSupportedException {
+            BufferedOutputStream o, ITransferListener toNotifyWhenInit)
+            throws FeatureNotSupportedException {
         if (brand.compareTo("GARMIN") == 0) {
-            return new GarminGPS(i, o);
+            return new GarminGPS(i, o, toNotifyWhenInit);
         } else {
             throw new FeatureNotSupportedException();
         }
     }
 
-    protected GPS() {
+    protected GPS(ITransferListener toNotifyWhenInit) {
         zListeners = new HashMap();
+        addTransferListener(toNotifyWhenInit);
     }
 
     /**
@@ -89,7 +93,7 @@ public abstract class GPS {
      * this list can't be directly added, but have to be added through addition
      * of other listeners.
      */
-    protected void addTransferListener(ITransferListener l) {
+    public void addTransferListener(ITransferListener l) {
         if (zListeners.get("TRANSFER") == null)
             zListeners.put("TRANSFER", new Vector());
         // Only allow a listener to be registered once.
@@ -103,7 +107,7 @@ public abstract class GPS {
     /**
      * Removes the the transfer-listener l from the list of transfer-listeners.
      */
-    protected void removeTransferListener(ITransferListener l) {
+    public void removeTransferListener(ITransferListener l) {
         while (((Vector) zListeners.get("TRANSFER")).removeElement(l)) {
         }
         return;

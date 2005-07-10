@@ -12,6 +12,8 @@ import java.io.OutputStream;
  */
 
 public class GarminOutputStream extends FilterOutputStream {
+    private static final boolean debug=false;
+    
     public GarminOutputStream(OutputStream o) {
         super(o);
     }
@@ -28,12 +30,15 @@ public class GarminOutputStream extends FilterOutputStream {
         int c;
         // Iterate through size-field, data-field and checksum-field. Add
         // stuffing where necessary.
+        if(debug) System.out.print("->");
         for (int i = 0; i < packet.getByte(2) + 2; i++) {
             c = packet.getByte(i + 2);
             write(c);
             if (c == GarminRawPacket.DLE)
                 write(c);
+            if(debug) System.out.print(" "+Integer.toHexString(c));
         }
+        if(debug) System.out.println();
 
         write(GarminRawPacket.DLE);
         write(GarminRawPacket.ETX);

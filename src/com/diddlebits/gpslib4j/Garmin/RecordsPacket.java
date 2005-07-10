@@ -12,7 +12,7 @@ public class RecordsPacket extends GarminPacket {
     /** The number of records to come, that this packet announces. */
     protected int number;
 
-    public RecordsPacket(GarminRawPacket p) {
+    public RecordsPacket(GarminRawPacket p) throws PacketNotRecognizedException, InvalidFieldValue, InvalidPacketException {
         super();
 
         if (p.getID() != GarminRawPacket.Pid_Records) {
