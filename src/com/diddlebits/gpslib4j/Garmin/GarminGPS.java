@@ -37,8 +37,9 @@ public class GarminGPS extends GPS implements Runnable {
 
     /** A vector containing references to all the GarminListeners. */
     protected Vector GarminListeners;
-    
-    public GarminGPS(BufferedInputStream i, BufferedOutputStream o, ITransferListener toNotifyWhenInit) {
+
+    public GarminGPS(BufferedInputStream i, BufferedOutputStream o,
+            ITransferListener toNotifyWhenInit) {
         super(toNotifyWhenInit);
         input = new GarminInputStream(i);
         output = new GarminOutputStream(o);
@@ -49,7 +50,7 @@ public class GarminGPS extends GPS implements Runnable {
 
         startConnect();
     }
-    
+
     private void startConnect() {
         // Request product information.
         try {
@@ -64,8 +65,6 @@ public class GarminGPS extends GPS implements Runnable {
             e.printStackTrace();
         }
     }
-    
-    
 
     /**
      * Adds the specified GarminListener to receive all packets sent from the
@@ -175,13 +174,14 @@ public class GarminGPS extends GPS implements Runnable {
      * distribute it to the correct listeners.
      * 
      * @return True if an acknoledge is requested
-     * @throws InvalidFieldValue 
-     * @throws PacketNotRecognizedException 
-     * @throws InvalidPacketException 
+     * @throws InvalidFieldValue
+     * @throws PacketNotRecognizedException
+     * @throws InvalidPacketException
      */
     protected int distribute(GarminRawPacket p)
             throws ProtocolNotRecognizedException,
-            ProtocolNotSupportedException, PacketNotRecognizedException, InvalidFieldValue, InvalidPacketException {
+            ProtocolNotSupportedException, PacketNotRecognizedException,
+            InvalidFieldValue, InvalidPacketException {
         switch (p.getID()) {
         case GarminRawPacket.Pid_Position_Data:
             firePositionData(GarminFactory.Get().createPosition(p));
@@ -227,9 +227,8 @@ public class GarminGPS extends GPS implements Runnable {
             description = pp.getDescription();
             description += "\nSoftware version: " + pp.getSWVersion();
             description += "\nProduct ID: " + pp.getProductID();
-            System.out.println("Got product");
-            if(!GarminFactory.isWaitingForProtocolData()) {
-                //we don't expect protocol array => init is done
+            if (!GarminFactory.isWaitingForProtocolData()) {
+                // we don't expect protocol array => init is done
                 fireTransferComplete();
             }
             return GarminRawPacket.Pid_Ack_Byte;
@@ -237,15 +236,17 @@ public class GarminGPS extends GPS implements Runnable {
             description += "\nProtocols supported:\n";
             description += (GarminFactory.Get()
                     .createProtocolArrayAndInitFromIt(p)).toString();
-            System.out.println("Got protocol");
             fireTransferComplete();
             return GarminRawPacket.Pid_Ack_Byte;
         case GarminRawPacket.Pid_Ack_Byte:
             // ack packet
-            // System.out.println("ACK received");
+            System.out.println("ACK received");
             if (currentTask >= 0) {
-                // case of empty data type
-                //fireTransferComplete();
+                // TODO: find a way to make the difference between an ACK for a
+                // command with data following and a ack from a command without
+                // data. My GPSMAP 60 is just answering with ACK when I
+                // requestLap...
+                // fireTransferComplete();
             }
             return -1;
         default:
@@ -379,7 +380,7 @@ public class GarminGPS extends GPS implements Runnable {
      */
     public void setAutoTransmit(boolean t) throws FeatureNotSupportedException,
             IOException {
-        try { 
+        try {
             if (t) {
                 currentTask = GarminFactory.Get().getCommandId(
                         GarminFactory.CmndStartPvtData);
