@@ -50,7 +50,7 @@ public class GarminInputStream extends FilterInputStream {
         packet[0] = GarminRawPacket.DLE;
         packet[1] = id;
         packet[2] = size;
-        if(debug) System.out.print("<-");
+        if(debug) System.out.print("<-"+Integer.toHexString(GarminRawPacket.DLE)+" "+Integer.toHexString(id)+" "+Integer.toHexString(size));
         for (int i = 0; i < size + 3; i++) {
             packet[3 + i] = read();
             if(debug) System.out.print(" "+Integer.toHexString(packet[3+i]));

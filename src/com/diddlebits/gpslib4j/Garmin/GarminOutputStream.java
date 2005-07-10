@@ -24,13 +24,13 @@ public class GarminOutputStream extends FilterOutputStream {
             throw (new InvalidPacketException(packet.getPacket(), packet
                     .isLegal()));
         }
+        if(debug) System.out.print("-> "+Integer.toHexString(packet.getByte(0))+" "+Integer.toHexString(packet.getByte(1)));
         write(packet.getByte(0));
         write(packet.getByte(1));
 
         int c;
         // Iterate through size-field, data-field and checksum-field. Add
         // stuffing where necessary.
-        if(debug) System.out.print("->");
         for (int i = 0; i < packet.getByte(2) + 2; i++) {
             c = packet.getByte(i + 2);
             write(c);
@@ -38,8 +38,8 @@ public class GarminOutputStream extends FilterOutputStream {
                 write(c);
             if(debug) System.out.print(" "+Integer.toHexString(c));
         }
-        if(debug) System.out.println();
 
+        if(debug) System.out.println(" "+Integer.toHexString(GarminRawPacket.DLE)+" "+Integer.toHexString(GarminRawPacket.ETX));
         write(GarminRawPacket.DLE);
         write(GarminRawPacket.ETX);
         flush();
