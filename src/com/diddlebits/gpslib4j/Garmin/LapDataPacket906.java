@@ -20,10 +20,10 @@ public class LapDataPacket906 extends GarminPacket implements ILap {
     protected float total_distance;
 
     /** begin point */
-    Position start_position;
+    protected Position start_position;
 
     /** end point */
-    Position end_position;
+    protected Position end_position;
 
     /** calories */
     protected int calories;
@@ -34,13 +34,18 @@ public class LapDataPacket906 extends GarminPacket implements ILap {
     /** unused */
     protected short unused;
 
+    protected static FloatSpecification DistanceSpecification = new FloatSpecification(
+            0.0, 1e24, 0.1);
+
     /**
      * Throws a PacketNotRecognizedException if the lap-dataformat is not
      * implemented.
-     * @throws PacketNotRecognizedException 
-     * @throws InvalidFieldValue 
+     * 
+     * @throws PacketNotRecognizedException
+     * @throws InvalidFieldValue
      */
-    public LapDataPacket906(GarminRawPacket p) throws PacketNotRecognizedException, InvalidFieldValue {
+    public LapDataPacket906(GarminRawPacket p)
+            throws PacketNotRecognizedException, InvalidFieldValue {
         super();
 
         if (p.getID() != GarminRawPacket.Pid_Lap) {
@@ -85,7 +90,7 @@ public class LapDataPacket906 extends GarminPacket implements ILap {
         total_time = visitor.intField(UINT32, GPSFields.TotalTimeField,
                 total_time, 0, 0xFFFFFFFE, 0xFFFFFFFF);
         total_distance = (float) visitor.floatField(FLOAT32,
-                GPSFields.TotalDistanceField, total_distance, 0.0, 1e24);
+                GPSFields.TotalDistanceField, total_distance, DistanceSpecification);
         start_position = visitor.positionField(GPSFields.StartPositionField,
                 start_position);
         end_position = visitor.positionField(GPSFields.EndPositionField,

@@ -38,14 +38,22 @@ public class PVTDataPacket800 extends GarminPacket implements IPosition {
 
     protected static GPSEnumDefinition PositionFixEnum;
 
+    protected static FloatSpecification FullRangeSpecification = new FloatSpecification(
+            -1e24, 1e24, Double.MIN_VALUE);
+
+    protected static FloatSpecification TimeOfWeekSpecification = new FloatSpecification(
+            0.0, 7.0 * 24.0 * 3600.0, 0.001);
+
     /**
      * Treats the packet p as a packet containing PVT-data. Throws
      * PacketNotRecognizedException if p is not a PVT-packet. Throws
      * InvalidPacketException if the packet contains too little data.
-     * @throws PacketNotRecognizedException 
-     * @throws InvalidFieldValue 
+     * 
+     * @throws PacketNotRecognizedException
+     * @throws InvalidFieldValue
      */
-    public PVTDataPacket800(GarminRawPacket p) throws PacketNotRecognizedException, InvalidFieldValue {
+    public PVTDataPacket800(GarminRawPacket p)
+            throws PacketNotRecognizedException, InvalidFieldValue {
         super();
 
         if (p.getID() != GarminRawPacket.Pid_Pvt_Data) {
@@ -57,27 +65,28 @@ public class PVTDataPacket800 extends GarminPacket implements IPosition {
     }
 
     protected void visit(GarminGPSDataVisitor visitor) throws InvalidFieldValue {
-        visitor.floatField(FLOAT32, GPSFields.AltitudeField, alt, -1e24, 1e24);
-        visitor.floatField(FLOAT32, GPSFields.EPEField, epe, -1e24,
-                1e24);
+        visitor.floatField(FLOAT32, GPSFields.AltitudeField, alt,
+                FullRangeSpecification);
+        visitor.floatField(FLOAT32, GPSFields.EPEField, epe,
+                FullRangeSpecification);
         visitor.floatField(FLOAT32, GPSFields.HEPEField, eph,
-                -1e24, 1e24);
+                FullRangeSpecification);
         visitor.floatField(FLOAT32, GPSFields.VEPEField, epv,
-                -1e24, 1e24);
+                FullRangeSpecification);
         visitor.enumField(UINT16, GPSFields.PositionFixTypeField, fix,
                 GetPositionFixEnum());
-        visitor.floatField(FLOAT32, GPSFields.TimeOfWeekField, tow, 0.0,
-                7.0 * 24.0 * 3600.0);
+        visitor.floatField(FLOAT32, GPSFields.TimeOfWeekField, tow, TimeOfWeekSpecification);
         visitor.positionField(GPSFields.PositionField, position);
-        visitor.floatField(FLOAT32, GPSFields.VelocityEastField, veast, -1e24, 1e24);
-        visitor.floatField(FLOAT32, GPSFields.VelocityNorthField, vnorth, -1e24, 1e24);
-        visitor.floatField(FLOAT32, GPSFields.VelocityUpField, vup, -1e24, 1e24);
-        visitor.floatField(FLOAT32, GPSFields.MslHeightField,
-                msl_hght, -1e24, 1e24);
+        visitor.floatField(FLOAT32, GPSFields.VelocityEastField, veast, FullRangeSpecification);
+        visitor.floatField(FLOAT32, GPSFields.VelocityNorthField, vnorth,
+                FullRangeSpecification);
+        visitor
+                .floatField(FLOAT32, GPSFields.VelocityUpField, vup, FullRangeSpecification);
+        visitor.floatField(FLOAT32, GPSFields.MslHeightField, msl_hght, FullRangeSpecification);
         visitor.intField(SINT16, GPSFields.LeapSecondsField, leap_scnds,
                 -0x8000, 0x7FFF, 0x8000);
-        visitor.intField(UINT32, GPSFields.WeekNumberdaysField, wn_days, 0, 0xFFFF,
-                0x10000);
+        visitor.intField(UINT32, GPSFields.WeekNumberdaysField, wn_days, 0,
+                0xFFFF, 0x10000);
     }
 
     private static GPSEnumDefinition GetPositionFixEnum() {

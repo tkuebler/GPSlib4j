@@ -12,8 +12,8 @@ import java.io.OutputStream;
  */
 
 public class GarminOutputStream extends FilterOutputStream {
-    private static final boolean debug=false;
-    
+    private static final boolean debug = false;
+
     public GarminOutputStream(OutputStream o) {
         super(o);
     }
@@ -24,7 +24,9 @@ public class GarminOutputStream extends FilterOutputStream {
             throw (new InvalidPacketException(packet.getPacket(), packet
                     .isLegal()));
         }
-        if(debug) System.out.print("-> "+Integer.toHexString(packet.getByte(0))+" "+Integer.toHexString(packet.getByte(1)));
+        if (debug)
+            System.out.print("-> " + Integer.toHexString(packet.getByte(0))
+                    + " " + Integer.toHexString(packet.getByte(1)));
         write(packet.getByte(0));
         write(packet.getByte(1));
 
@@ -36,10 +38,13 @@ public class GarminOutputStream extends FilterOutputStream {
             write(c);
             if (c == GarminRawPacket.DLE)
                 write(c);
-            if(debug) System.out.print(" "+Integer.toHexString(c));
+            if (debug)
+                System.out.print(" " + Integer.toHexString(c));
         }
 
-        if(debug) System.out.println(" "+Integer.toHexString(GarminRawPacket.DLE)+" "+Integer.toHexString(GarminRawPacket.ETX));
+        if (debug)
+            System.out.println(" " + Integer.toHexString(GarminRawPacket.DLE)
+                    + " " + Integer.toHexString(GarminRawPacket.ETX));
         write(GarminRawPacket.DLE);
         write(GarminRawPacket.ETX);
         flush();

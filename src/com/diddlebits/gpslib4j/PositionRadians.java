@@ -8,6 +8,14 @@ public class PositionRadians {
     private final double value;
 
     /**
+     * @param v The amount in degrees.
+     * @return A new PositionRadian instance.
+     */
+    public static PositionRadians CreateFromDegrees(double v) {
+        return new PositionRadians(v * Math.PI / 180.0d);
+    }
+    
+    /**
      * Initializes the PositionRadians-object. After the object is constructed,
      * it can't change is value.
      */

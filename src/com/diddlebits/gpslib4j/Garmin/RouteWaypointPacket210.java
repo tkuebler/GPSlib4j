@@ -19,26 +19,31 @@ public class RouteWaypointPacket210 extends GarminPacket implements
     /**
      * Throws a PacketNotRecognizedException if the Trackpoint-dataformat is not
      * implemented.
-     * @throws InvalidFieldValue 
-     * @throws PacketNotRecognizedException 
+     * 
+     * @throws InvalidFieldValue
+     * @throws PacketNotRecognizedException
      */
 
-    public RouteWaypointPacket210(GarminRawPacket p) throws PacketNotRecognizedException, InvalidFieldValue {
+    public RouteWaypointPacket210(GarminRawPacket p)
+            throws PacketNotRecognizedException, InvalidFieldValue {
         super();
 
         initFromRawPacket(p);
     }
 
     protected void visit(GarminGPSDataVisitor visitor) throws InvalidFieldValue {
-        wpClass = visitor.enumField(UINT16, GPSFields.ClassField, wpClass, GetClassEnum());
+        wpClass = visitor.enumField(UINT16, GPSFields.ClassField, wpClass,
+                GetClassEnum());
         if (wpClass == 3 || wpClass == 0xFF) {
             char tmp[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF,
                     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
             subClass = new String(tmp);
         }
-        subClass = visitor.stringField(ACHAR, GPSFields.SubClassField, subClass, 18, null);
-        ident = visitor.stringField(VCHAR, GPSFields.IdentField, ident, 50,
-                CommonGarminStringValidators.Get().getWaypointIdent());
+        subClass = visitor.stringField(ACHAR, GPSFields.SubClassField,
+                subClass, GarminStringValidatorsFactory.CreateUnchecked(18,
+                        true));
+        ident = visitor.stringField(VCHAR, GPSFields.IdentField, ident,
+                GarminStringValidatorsFactory.CreateWaypointIdent(50, true));
     }
 
     public static GPSEnumDefinition GetClassEnum() {

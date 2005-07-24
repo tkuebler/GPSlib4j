@@ -1,7 +1,9 @@
 package com.diddlebits.gpslib4j.Garmin;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.diddlebits.gpslib4j.Position;
-import com.diddlebits.gpslib4j.PositionDegrees;
 
 /**
  * A class that encapsulates the basic functionality of a packet.
@@ -372,16 +374,26 @@ public class GarminRawPacket extends GarminPacket {
         return res.toString();
     }
 
+    static final Pattern SpaceAtTheEnd=Pattern.compile(" +$");
+
     protected String readFixedLengthString(int length) {
-        String res = new String();
+        StringBuffer res = new StringBuffer();
         int target = pointer + length;
+        //get the content, ignoring the usual weird 
         while (pointer < target) {
             if (packet[pointer] != 0 && packet[pointer] != 255) {
-                res += (char) packet[pointer];
+                res.append((char) packet[pointer]);
             }
             pointer++;
         }
-        return res;
+        
+        //remove the spaces at the end (sometimes used as filler)
+        Matcher matcher = SpaceAtTheEnd.matcher(res.toString());
+        if(matcher.matches()) {
+            return matcher.replaceFirst("");
+        } else {
+            return res.toString();
+        }
     }
 
     /**
@@ -430,13 +442,9 @@ public class GarminRawPacket extends GarminPacket {
         if (la == 0x7FFFFFFF && lo == 0x7FFFFFFF) {
             return null;
         } else {
-            // have to convert from semicircles to degrees
-            PositionDegrees lat = new PositionDegrees((la * 180)
-                    / Math.pow(2.0d, 31.0d));
-            PositionDegrees lon = new PositionDegrees((lo * 180)
-                    / Math.pow(2.0d, 31.0d));
-
-            return new Position(lat.convertToRadians(), lon.convertToRadians());
+            return new Position(
+                    (la * 180) / Math.pow(2.0d, 31.0d),
+                    (lo * 180) / Math.pow(2.0d, 31.0d));
         }
     }
 

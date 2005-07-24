@@ -80,4 +80,9 @@ public abstract class GarminPacket {
         source.pointer2start();
         visit(visitor);
     }
+    
+    public Object clone() throws CloneNotSupportedException {
+        //if the childs are having mutable attributes, we are screwed...
+        return super.clone();
+    }
 }

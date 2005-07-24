@@ -14,18 +14,20 @@ public class TrackpointHeaderPacket312 extends GarminPacket implements
 
     protected short color;
 
-    protected String trkIdent;
+    protected String ident;
 
     private static GPSEnumDefinition ColorEnum;
 
     /**
      * Throws a PacketNotRecognizedException if the Trackpoint-dataformat is not
      * implemented.
-     * @throws InvalidFieldValue 
-     * @throws PacketNotRecognizedException 
+     * 
+     * @throws InvalidFieldValue
+     * @throws PacketNotRecognizedException
      */
 
-    public TrackpointHeaderPacket312(GarminRawPacket p) throws PacketNotRecognizedException, InvalidFieldValue {
+    public TrackpointHeaderPacket312(GarminRawPacket p)
+            throws PacketNotRecognizedException, InvalidFieldValue {
         super();
 
         initFromRawPacket(p);
@@ -33,10 +35,10 @@ public class TrackpointHeaderPacket312 extends GarminPacket implements
 
     protected void visit(GarminGPSDataVisitor visitor) throws InvalidFieldValue {
         dspl = visitor.boolField(GPSFields.DisplayField, dspl);
-        color = (short) visitor
-                .enumField(UINT8, GPSFields.ColorField, color, GetColorEnum());
-        trkIdent = visitor.stringField(VCHAR, GPSFields.IdentField, trkIdent, 50,
-                CommonGarminStringValidators.Get().getIdent());
+        color = (short) visitor.enumField(UINT8, GPSFields.ColorField, color,
+                GetColorEnum());
+        ident = visitor.stringField(VCHAR, GPSFields.IdentField, ident,
+                GarminStringValidatorsFactory.CreateIdent(50, false));
     }
 
     public short getColor() {
@@ -48,7 +50,7 @@ public class TrackpointHeaderPacket312 extends GarminPacket implements
     }
 
     public String getIdent() {
-        return trkIdent;
+        return ident;
     }
 
     private static GPSEnumDefinition GetColorEnum() {

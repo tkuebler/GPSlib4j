@@ -46,16 +46,16 @@ public class GarminGPSDataWriteVisitor extends GarminGPSDataVisitor {
     }
 
     public double floatField(int type, String name, double value,
-            double minValue, double maxValue) throws InvalidFieldValue {
+            FloatSpecification spec) throws InvalidFieldValue {
         if (IsInternalField(name))
             return value;
         try {
             double ret = visitor.floatField(GetPureFieldName(name),
-                    value <= 9e24, value, minValue, maxValue);
-            if (ret < minValue || ret > maxValue) {
+                    value <= 9e24, value, spec);
+            String error=spec.validate(ret);
+            if (error!=null) {
                 throw new InvalidFieldValue(GetPureFieldName(name), Double
-                        .toString(ret), "Out of range (" + minValue + ".."
-                        + maxValue + ")");
+                        .toString(ret), error);
             }
             return ret;
         } catch (NullField e) {
@@ -64,19 +64,14 @@ public class GarminGPSDataWriteVisitor extends GarminGPSDataVisitor {
     }
 
     public String stringField(int type, String name, String value,
-            int maxLength, StringValidator validator) throws InvalidFieldValue {
+            StringValidator validator) throws InvalidFieldValue {
         if (IsInternalField(name))
             return value;
 
         String ret = visitor.stringField(GetPureFieldName(name), value != null
-                && value.length() > 0, value, maxLength, validator);
+                && value.length() > 0, value, validator);
 
-        if (ret.length() > maxLength) {
-            throw new InvalidFieldValue(GetPureFieldName(name), ret,
-                    "Too long (max length=" + maxLength + ")");
-        }
-
-        if (validator != null) validator.throwIfInvalid(name, ret);
+        validator.throwIfInvalid(name, ret);
 
         return ret;
     }

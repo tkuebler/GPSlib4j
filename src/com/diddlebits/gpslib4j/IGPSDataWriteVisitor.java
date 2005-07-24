@@ -43,7 +43,7 @@ public interface IGPSDataWriteVisitor {
      *             if the field has to be set to NULL.
      */
     boolean boolField(String name, boolean isDefined, boolean value)
-            throws NullField;
+            throws NullField, InvalidFieldValue;
 
     /**
      * Called for each integer fields.
@@ -63,7 +63,7 @@ public interface IGPSDataWriteVisitor {
      *             if the field has to be set to NULL.
      */
     long intField(String name, boolean isDefined, long value, long minValue,
-            long maxValue) throws NullField;
+            long maxValue) throws NullField, InvalidFieldValue;
 
     /**
      * Called for each float fields.
@@ -74,16 +74,14 @@ public interface IGPSDataWriteVisitor {
      *            True if the field is defined.
      * @param value
      *            The value of the field.
-     * @param minValue
-     *            The minimum value.
-     * @param maxValue
-     *            The maximum value.
+     * @param spec
+     *            The specification of what is allowed.
      * @return The new value.
      * @throws NullField
      *             if the field has to be set to NULL.
      */
     double floatField(String name, boolean isDefined, double value,
-            double minValue, double maxValue) throws NullField;
+            FloatSpecification spec) throws NullField, InvalidFieldValue;
 
     /**
      * Called for each string fields.
@@ -101,7 +99,7 @@ public interface IGPSDataWriteVisitor {
      * @return The new value or NULL.
      */
     String stringField(String name, boolean isDefined, String value,
-            int maxLength, StringValidator validator);
+            StringValidator validator) throws InvalidFieldValue;
 
     /**
      * Called for each position fields.
@@ -113,8 +111,10 @@ public interface IGPSDataWriteVisitor {
      * @param value
      *            The value of the field.
      * @return The new value or NULL.
+     * @throws InvalidFieldValue
      */
-    Position positionField(String name, boolean isDefined, Position value);
+    Position positionField(String name, boolean isDefined, Position value)
+            throws InvalidFieldValue;
 
     /**
      * Called for each time fields.
@@ -127,7 +127,8 @@ public interface IGPSDataWriteVisitor {
      *            The value of the field.
      * @return The new value or NULL.
      */
-    Date timeField(String name, boolean isDefined, Date value);
+    Date timeField(String name, boolean isDefined, Date value)
+            throws InvalidFieldValue;
 
     /**
      * Called for each enum fields (colors, icons, ...).
@@ -146,5 +147,5 @@ public interface IGPSDataWriteVisitor {
      *             if the field has to be set to NULL.
      */
     int enumField(String name, boolean isDefined, int value,
-            GPSEnumDefinition definition) throws NullField;
+            GPSEnumDefinition definition) throws NullField, InvalidFieldValue;
 }

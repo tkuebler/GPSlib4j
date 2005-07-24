@@ -59,7 +59,7 @@ public class WaypointDataPacket108 extends GarminPacket implements IWaypoint {
     protected String city;
 
     /** Address number */
-    protected String addr;
+    protected String address;
 
     /** Intersecting road label. */
     protected String crossRoad;
@@ -72,10 +72,14 @@ public class WaypointDataPacket108 extends GarminPacket implements IWaypoint {
 
     private static GPSEnumDefinition SymbolEnum;
 
+    protected static FloatSpecification AltSpecification = new FloatSpecification(
+            -1e24, 1e24, 0.1);
+
     /**
      * Throws a PacketNotRecognizedException if the Waypoint-dataformat is not
      * implemented.
-     * @throws InvalidFieldValue 
+     * 
+     * @throws InvalidFieldValue
      */
 
     public WaypointDataPacket108(GarminRawPacket p)
@@ -91,37 +95,47 @@ public class WaypointDataPacket108 extends GarminPacket implements IWaypoint {
     }
 
     protected void visit(GarminGPSDataVisitor visitor) throws InvalidFieldValue {
-        wpt_class = (short) visitor.enumField(UINT8, GPSFields.ClassField, wpt_class,
-                GetWaypointClassEnum());
-        color = (short) visitor
-                .enumField(UINT8, GPSFields.ColorField, color, GetColorEnum());
+        wpt_class = (short) visitor.enumField(UINT8, GPSFields.ClassField,
+                wpt_class, GetWaypointClassEnum());
+        color = (short) visitor.enumField(UINT8, GPSFields.ColorField, color,
+                GetColorEnum());
         dspl = (short) visitor.enumField(UINT8, GPSFields.DisplayField, dspl,
                 WaypointDataPacket103.GetDisplayEnum());
         visitor.intField(UINT8, GPSFields.AttrField, 0x60, 0x60, 0x60, 0x60);
-        smbl = visitor.enumField(UINT16, GPSFields.SymbolField, smbl, GetSymbolEnum());
-        subclass = visitor.stringField(ACHAR, GPSFields.SubClassField, subclass, 18, null);
+        smbl = visitor.enumField(UINT16, GPSFields.SymbolField, smbl,
+                GetSymbolEnum());
+        subclass = visitor.stringField(ACHAR, GPSFields.SubClassField,
+                subclass, GarminStringValidatorsFactory.CreateUnchecked(18,
+                        true));
         position = visitor.positionField(GPSFields.PositionField, position);
-        alt = (float) visitor.floatField(FLOAT32, GPSFields.AltitudeField, alt, -1e24, 1e24);
-        depth = (float) visitor
-                .floatField(FLOAT32, GPSFields.DepthField, depth, -1e24, 1e24);
-        dist = (float) visitor.floatField(FLOAT32, GPSFields.ProxymityField, dist,
-                -1e24, 1e24);
-        state = visitor.stringField(ACHAR, GPSFields.StateField, state, 2, null);
-        cc = visitor.stringField(ACHAR, GPSFields.CountryCodeField, cc, 2,
-                CommonGarminStringValidators.Get().getCountryCode());
-        ident = visitor.stringField(VCHAR, GPSFields.IdentField, ident, 100,
-                CommonGarminStringValidators.Get().getWaypointIdent());
+        alt = (float) visitor.floatField(FLOAT32, GPSFields.AltitudeField, alt,
+                AltSpecification);
+        depth = (float) visitor.floatField(FLOAT32, GPSFields.DepthField,
+                depth, AltSpecification);
+        dist = (float) visitor.floatField(FLOAT32, GPSFields.ProxymityField,
+                dist, AltSpecification);
+        state = visitor.stringField(ACHAR, GPSFields.StateField, state,
+                GarminStringValidatorsFactory.CreateUnchecked(2, true));
+        cc = visitor.stringField(ACHAR, GPSFields.CountryCodeField, cc,
+                GarminStringValidatorsFactory.CreateCountryCode(2, true));
+        ident = visitor.stringField(VCHAR, GPSFields.IdentField, ident,
+                GarminStringValidatorsFactory.CreateWaypointIdent(100, false));
         if (wpt_class != 0x00) {
             // only user waypoints can have comments
             comment = "";
         }
-        comment = visitor.stringField(VCHAR, GPSFields.CommentField, comment, 100,
-                CommonGarminStringValidators.Get().getComment());
-        facility = visitor.stringField(VCHAR, GPSFields.FacilityField, facility, 100, null);
-        city = visitor.stringField(VCHAR, GPSFields.CityField, city, 100, null);
-        addr = visitor.stringField(VCHAR, GPSFields.AddressField, addr, 100, null);
-        crossRoad = visitor.stringField(VCHAR, GPSFields.CrossRoadField, crossRoad, 100,
-                null);
+        comment = visitor.stringField(VCHAR, GPSFields.CommentField, comment,
+                GarminStringValidatorsFactory.CreateComment(100, true));
+        facility = visitor.stringField(VCHAR, GPSFields.FacilityField,
+                facility, GarminStringValidatorsFactory.CreateUnchecked(100,
+                        true));
+        city = visitor.stringField(VCHAR, GPSFields.CityField, city,
+                GarminStringValidatorsFactory.CreateUnchecked(100, true));
+        address = visitor.stringField(VCHAR, GPSFields.AddressField, address,
+                GarminStringValidatorsFactory.CreateUnchecked(100, true));
+        crossRoad = visitor.stringField(VCHAR, GPSFields.CrossRoadField,
+                crossRoad, GarminStringValidatorsFactory.CreateUnchecked(100,
+                        true));
     }
 
     public static GPSEnumDefinition GetWaypointClassEnum() {
@@ -457,10 +471,6 @@ public class WaypointDataPacket108 extends GarminPacket implements IWaypoint {
         return WaypointClassEnum;
     }
 
-    public String getAddr() {
-        return addr;
-    }
-
     public float getAlt() {
         return alt;
     }
@@ -521,7 +531,11 @@ public class WaypointDataPacket108 extends GarminPacket implements IWaypoint {
         return subclass;
     }
 
-    public short getWpt_class() {
+    public short getWptClass() {
         return wpt_class;
+    }
+
+    public String getAddress() {
+        return address;
     }
 }

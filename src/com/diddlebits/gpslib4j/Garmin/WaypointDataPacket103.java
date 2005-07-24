@@ -29,7 +29,8 @@ public class WaypointDataPacket103 extends GarminPacket implements IWaypoint {
     /**
      * Throws a PacketNotRecognizedException if the Waypoint-dataformat is not
      * implemented.
-     * @throws InvalidFieldValue 
+     * 
+     * @throws InvalidFieldValue
      */
     public WaypointDataPacket103(GarminRawPacket p)
             throws PacketNotRecognizedException, InvalidFieldValue {
@@ -70,13 +71,14 @@ public class WaypointDataPacket103 extends GarminPacket implements IWaypoint {
     }
 
     protected void visit(GarminGPSDataVisitor visitor) throws InvalidFieldValue {
-        ident = visitor.stringField(ACHAR, GPSFields.IdentField, ident, 6,
-                CommonGarminStringValidators.Get().getWaypointIdent());
+        ident = visitor.stringField(ACHAR, GPSFields.IdentField, ident,
+                GarminStringValidatorsFactory.CreateWaypointIdent(6, false));
         position = visitor.positionField(GPSFields.PositionField, position);
         visitor.intField(UINT32, GPSFields.UnusedField, 0, 0, 0, 0);
-        comment = visitor.stringField(ACHAR, GPSFields.CommentField, comment, 40,
-                CommonGarminStringValidators.Get().getComment());
-        smbl = visitor.enumField(UINT8, GPSFields.SymbolField, smbl, GetSymbolEnum());
+        comment = visitor.stringField(ACHAR, GPSFields.CommentField, comment,
+                GarminStringValidatorsFactory.CreateComment(40, true));
+        smbl = visitor.enumField(UINT8, GPSFields.SymbolField, smbl,
+                GetSymbolEnum());
         dspl = (short) visitor.enumField(UINT8, GPSFields.DisplayField, dspl,
                 GetDisplayEnum());
     }

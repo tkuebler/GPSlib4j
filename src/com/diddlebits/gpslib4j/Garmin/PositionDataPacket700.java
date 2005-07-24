@@ -9,10 +9,12 @@ public class PositionDataPacket700 extends GarminPacket implements IPosition {
      * Treats the packet p as a packet containing position-data. Throws
      * PacketNotRecognizedException if p is not a position-data-packet. Throws
      * InvalidPacketException if the packet contains too little data.
-     * @throws PacketNotRecognizedException 
-     * @throws InvalidFieldValue 
+     * 
+     * @throws PacketNotRecognizedException
+     * @throws InvalidFieldValue
      */
-    public PositionDataPacket700(GarminRawPacket p) throws PacketNotRecognizedException, InvalidFieldValue {
+    public PositionDataPacket700(GarminRawPacket p)
+            throws PacketNotRecognizedException, InvalidFieldValue {
         super();
         if (p.getID() != GarminRawPacket.Pid_Position_Data) {
             throw (new PacketNotRecognizedException(

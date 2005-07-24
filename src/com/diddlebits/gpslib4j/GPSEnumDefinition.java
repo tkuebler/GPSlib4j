@@ -1,6 +1,8 @@
 package com.diddlebits.gpslib4j;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class GPSEnumDefinition {
     private HashMap names = new HashMap();
@@ -107,5 +109,18 @@ public class GPSEnumDefinition {
             min = value;
         if (max < value)
             max = value;
+    }
+
+    /**
+     * @return The list of string representations of the names.
+     */
+    public String[] getStrings() {
+        String[] ret=new String[names.size()];
+        Iterator it=names.values().iterator();
+        for(int cpt=0; cpt<ret.length && it.hasNext(); ++cpt) {
+            ret[cpt]=(String)it.next();
+        }
+        Arrays.sort(ret);
+        return ret;
     }
 }

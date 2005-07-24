@@ -102,9 +102,9 @@ public class ConnectionTest implements IGPSlistener, IWaypointListener,
 
         System.out.println("Connected.");
 
-        //testPosition();
-        //testRoute();
-        //testWaypoint();
+        testPosition();
+        testRoute();
+        testWaypoint();
         testTrack();
         //testLap();
         testShutdown();

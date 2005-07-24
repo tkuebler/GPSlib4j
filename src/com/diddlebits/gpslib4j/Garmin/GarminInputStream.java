@@ -11,7 +11,7 @@ import java.io.InputStream;
  * filtering-functionality is read().
  */
 public class GarminInputStream extends FilterInputStream {
-    private static final boolean debug=false;
+    private static final boolean debug = false;
 
     /*
      * Last value read.
@@ -50,12 +50,17 @@ public class GarminInputStream extends FilterInputStream {
         packet[0] = GarminRawPacket.DLE;
         packet[1] = id;
         packet[2] = size;
-        if(debug) System.out.print("<-"+Integer.toHexString(GarminRawPacket.DLE)+" "+Integer.toHexString(id)+" "+Integer.toHexString(size));
+        if (debug)
+            System.out.print("<-" + Integer.toHexString(GarminRawPacket.DLE)
+                    + " " + Integer.toHexString(id) + " "
+                    + Integer.toHexString(size));
         for (int i = 0; i < size + 3; i++) {
             packet[3 + i] = read();
-            if(debug) System.out.print(" "+Integer.toHexString(packet[3+i]));
+            if (debug)
+                System.out.print(" " + Integer.toHexString(packet[3 + i]));
         }
-        if(debug) System.out.println();
+        if (debug)
+            System.out.println();
 
         if (packet[packet.length - 2] != GarminRawPacket.DLE) {
             throw (new InvalidPacketException(packet, packet.length - 2));

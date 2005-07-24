@@ -32,19 +32,19 @@ public class GarminGPSDataReadVisitor extends GarminGPSDataVisitor {
     }
 
     public double floatField(int type, String name, double value,
-            double minValue, double maxValue) {
+            FloatSpecification spec) {
         if (!IsInternalField(name)) {
             visitor.floatField(GetPureFieldName(name), value <= 9e24, value,
-                    minValue, maxValue);
+                    spec);
         }
         return value;
     }
 
     public String stringField(int type, String name, String value,
-            int maxLength, StringValidator validator) {
+            StringValidator validator) {
         if (!IsInternalField(name)) {
-            visitor.stringField(GetPureFieldName(name), value.length() > 0,
-                    value, maxLength, validator);
+            visitor.stringField(GetPureFieldName(name), value!=null && value.length() > 0,
+                    value, validator);
         }
         return value;
     }

@@ -71,7 +71,7 @@ public class GarminFactory {
     public static final int PVTBaseId = 800;
 
     public static final int LapBaseId = 900;
-    
+
     public static final int ShutdownBaseId = 1000; // fake id, not Garmin
 
     // stuff, see exception in
@@ -225,20 +225,23 @@ public class GarminFactory {
     }
 
     public ProductDataPacket createProductDataAndInitFromIt(GarminRawPacket p)
-            throws ProtocolNotRecognizedException, PacketNotRecognizedException, InvalidFieldValue {
+            throws ProtocolNotRecognizedException,
+            PacketNotRecognizedException, InvalidFieldValue {
         product = new ProductDataPacket(p);
         return product;
     }
 
     public ProtocolDataPacket createProtocolArrayAndInitFromIt(GarminRawPacket p)
-            throws ProtocolNotRecognizedException, PacketNotRecognizedException, InvalidPacketException {
+            throws ProtocolNotRecognizedException,
+            PacketNotRecognizedException, InvalidPacketException {
         protocols = new ProtocolDataPacket(p);
         return protocols;
     }
 
     public ITimeDate createTimeDate(GarminRawPacket p)
             throws ProtocolNotRecognizedException,
-            ProtocolNotSupportedException, PacketNotRecognizedException, InvalidFieldValue, InvalidPacketException {
+            ProtocolNotSupportedException, PacketNotRecognizedException,
+            InvalidFieldValue, InvalidPacketException {
         int proto = getDataPacketVersion(600);
         switch (proto) {
         case 600:
@@ -250,7 +253,8 @@ public class GarminFactory {
 
     public ILap createLap(GarminRawPacket p)
             throws ProtocolNotRecognizedException,
-            PacketNotRecognizedException, ProtocolNotSupportedException, InvalidFieldValue {
+            PacketNotRecognizedException, ProtocolNotSupportedException,
+            InvalidFieldValue {
         int proto = getDataPacketVersion(900);
         switch (proto) {
         case 906:
@@ -262,7 +266,8 @@ public class GarminFactory {
 
     public IPosition createPosition(GarminRawPacket p)
             throws ProtocolNotRecognizedException,
-            PacketNotRecognizedException, ProtocolNotSupportedException, InvalidFieldValue {
+            PacketNotRecognizedException, ProtocolNotSupportedException,
+            InvalidFieldValue {
         int proto = getDataPacketVersion(700);
         switch (proto) {
         case 700:
@@ -274,7 +279,8 @@ public class GarminFactory {
 
     public ITrackpoint createTrackpoint(GarminRawPacket p)
             throws ProtocolNotRecognizedException,
-            PacketNotRecognizedException, ProtocolNotSupportedException, InvalidFieldValue {
+            PacketNotRecognizedException, ProtocolNotSupportedException,
+            InvalidFieldValue {
         int proto = getDataPacketVersion(300);
         switch (proto) {
         case 300:
@@ -290,7 +296,8 @@ public class GarminFactory {
 
     public ITrackpointHeader createTrackpointHeader(GarminRawPacket p)
             throws ProtocolNotRecognizedException,
-            PacketNotRecognizedException, ProtocolNotSupportedException, InvalidFieldValue {
+            PacketNotRecognizedException, ProtocolNotSupportedException,
+            InvalidFieldValue {
         int proto = getDataPacketVersion(310);
         switch (proto) {
         case 310:
@@ -306,7 +313,8 @@ public class GarminFactory {
 
     public IWaypoint createWaypoint(GarminRawPacket p)
             throws ProtocolNotRecognizedException,
-            PacketNotRecognizedException, ProtocolNotSupportedException, InvalidFieldValue {
+            PacketNotRecognizedException, ProtocolNotSupportedException,
+            InvalidFieldValue {
         int proto = getDataPacketVersion(100);
         switch (proto) {
         case 103:
@@ -322,7 +330,8 @@ public class GarminFactory {
 
     public IPosition createPVT(GarminRawPacket p)
             throws ProtocolNotRecognizedException,
-            PacketNotRecognizedException, ProtocolNotSupportedException, InvalidFieldValue {
+            PacketNotRecognizedException, ProtocolNotSupportedException,
+            InvalidFieldValue {
         int proto = getDataPacketVersion(800);
         switch (proto) {
         case 800:
@@ -333,14 +342,16 @@ public class GarminFactory {
     }
 
     public RecordsPacket createRecords(GarminRawPacket p)
-            throws PacketNotRecognizedException, InvalidFieldValue, InvalidPacketException {
+            throws PacketNotRecognizedException, InvalidFieldValue,
+            InvalidPacketException {
         // low level stuff, not versioned
         return new RecordsPacket(p);
     }
 
     public IRouteHeader createRouteHeader(GarminRawPacket p)
             throws ProtocolNotRecognizedException,
-            ProtocolNotSupportedException, PacketNotRecognizedException, InvalidFieldValue {
+            ProtocolNotSupportedException, PacketNotRecognizedException,
+            InvalidFieldValue {
         int proto = getDataPacketVersion(200);
         switch (proto) {
         case 200:
@@ -356,7 +367,8 @@ public class GarminFactory {
 
     public IRouteWaypoint createRouteWaypoint(GarminRawPacket p)
             throws ProtocolNotRecognizedException,
-            ProtocolNotSupportedException, PacketNotRecognizedException, InvalidFieldValue {
+            ProtocolNotSupportedException, PacketNotRecognizedException,
+            InvalidFieldValue {
         int proto = getDataPacketVersion(210);
         switch (proto) {
         case 210:
@@ -367,10 +379,10 @@ public class GarminFactory {
     }
 
     /**
-     * @return True if a protocol data packet is expected 
+     * @return True if a protocol data packet is expected
      */
     public static boolean isWaitingForProtocolData() {
-        //TODO: to implement...
+        // TODO: to implement...
         return true;
     }
 }

@@ -12,7 +12,9 @@ public class RecordsPacket extends GarminPacket {
     /** The number of records to come, that this packet announces. */
     protected int number;
 
-    public RecordsPacket(GarminRawPacket p) throws PacketNotRecognizedException, InvalidFieldValue, InvalidPacketException {
+    public RecordsPacket(GarminRawPacket p)
+            throws PacketNotRecognizedException, InvalidFieldValue,
+            InvalidPacketException {
         super();
 
         if (p.getID() != GarminRawPacket.Pid_Records) {
@@ -33,7 +35,8 @@ public class RecordsPacket extends GarminPacket {
     }
 
     protected void visit(GarminGPSDataVisitor visitor) throws InvalidFieldValue {
-        visitor.intField(UINT16, GPSFields.NumberField, number, 0, 0xFFFF, 0x10000);
+        visitor.intField(UINT16, GPSFields.NumberField, number, 0, 0xFFFF,
+                0x10000);
     }
 
     public String getPacketType() {

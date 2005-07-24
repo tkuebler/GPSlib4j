@@ -63,13 +63,11 @@ public interface IGPSDataReadVisitor {
      *            True if the field is defined.
      * @param value
      *            The value of the field.
-     * @param minValue
-     *            The minimum value.
-     * @param maxValue
-     *            The maximum value.
+     * @param spec
+     *            The specification of what is allowed.
      */
     void floatField(String name, boolean isDefined, double value,
-            double minValue, double maxValue);
+            FloatSpecification spec);
 
     /**
      * Called for each string fields.
@@ -80,13 +78,11 @@ public interface IGPSDataReadVisitor {
      *            True if the field is defined.
      * @param value
      *            The value of the field.
-     * @param maxLength
-     *            The maximum number of characters in the string.
      * @param validator
      *            An object used to validate the string.
      */
     void stringField(String name, boolean isDefined, String value,
-            int maxLength, StringValidator validator);
+            StringValidator validator);
 
     /**
      * Called for each position fields.

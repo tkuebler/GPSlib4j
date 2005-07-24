@@ -16,10 +16,12 @@ public class ProtocolDataPacket extends GarminPacket {
      * Treats the packet p as a packet containing data about which protocols the
      * GPS support. Throws PacketNotRecognizedException if p is not a
      * product-data-packet.
-     * @throws PacketNotRecognizedException 
-     * @throws InvalidPacketException 
+     * 
+     * @throws PacketNotRecognizedException
+     * @throws InvalidPacketException
      */
-    public ProtocolDataPacket(GarminRawPacket p) throws PacketNotRecognizedException, InvalidPacketException {
+    public ProtocolDataPacket(GarminRawPacket p)
+            throws PacketNotRecognizedException, InvalidPacketException {
         super();
         if (p.getID() != GarminRawPacket.Pid_Protocol_Array) {
             throw (new PacketNotRecognizedException(
@@ -47,7 +49,7 @@ public class ProtocolDataPacket extends GarminPacket {
     public ProtocolDataPacket(ProductDataPacket product) {
         // TODO: implement the table 28 in "Garmin Device Interface
         // Specification"
-        tags=new char[0];
+        tags = new char[0];
         data = new int[0];
     }
 
@@ -70,8 +72,7 @@ public class ProtocolDataPacket extends GarminPacket {
         for (int i = 0; i < tags.length; ++i) {
             String tag = new String();
             tag += tags[i];
-            tag = visitor.stringField(ACHAR, "tag" + i, tag, 1,
-                    GetTagValidator());
+            tag = visitor.stringField(ACHAR, "tag" + i, tag, GetTagValidator());
             tags[i] = tag.charAt(0);
 
             data[i] = (int) visitor.intField(UINT16, "data" + i, data[i], 0,
@@ -85,7 +86,7 @@ public class ProtocolDataPacket extends GarminPacket {
 
     public StringValidator GetTagValidator() throws InvalidFieldValue {
         if (TagValidator == null) {
-            TagValidator = new RegexpStringValidator("tag", "[LAD]");
+            TagValidator = new RegexpStringValidator("tag", "[LAD]", 1, false);
         }
         return TagValidator;
     }

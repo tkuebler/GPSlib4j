@@ -16,11 +16,13 @@ public class RouteHeaderPacket201 extends GarminPacket implements IRouteHeader {
     /**
      * Throws a PacketNotRecognizedException if the Trackpoint-dataformat is not
      * implemented.
-     * @throws InvalidFieldValue 
-     * @throws PacketNotRecognizedException 
+     * 
+     * @throws InvalidFieldValue
+     * @throws PacketNotRecognizedException
      */
 
-    public RouteHeaderPacket201(GarminRawPacket p) throws PacketNotRecognizedException, InvalidFieldValue {
+    public RouteHeaderPacket201(GarminRawPacket p)
+            throws PacketNotRecognizedException, InvalidFieldValue {
         super();
 
         initFromRawPacket(p);
@@ -29,8 +31,8 @@ public class RouteHeaderPacket201 extends GarminPacket implements IRouteHeader {
     protected void visit(GarminGPSDataVisitor visitor) throws InvalidFieldValue {
         routeNumber = (short) visitor.intField(UINT8, GPSFields.IndexField,
                 routeNumber, 0, 0xFF, 0x100);
-        cmnt = visitor.stringField(ACHAR, GPSFields.CommentField, cmnt, 20,
-                CommonGarminStringValidators.Get().getComment());
+        cmnt = visitor.stringField(ACHAR, GPSFields.CommentField, cmnt,
+                GarminStringValidatorsFactory.CreateComment(20, true));
     }
 
     public String getPacketType() {

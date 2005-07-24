@@ -26,10 +26,10 @@ public abstract class GarminGPSDataVisitor {
             throws InvalidFieldValue;
 
     public abstract double floatField(int type, String name, double value,
-            double minValue, double maxValue) throws InvalidFieldValue;
+            FloatSpecification spec) throws InvalidFieldValue;
 
     public abstract String stringField(int type, String name, String value,
-            int maxLength, StringValidator validator) throws InvalidFieldValue;
+            StringValidator validator) throws InvalidFieldValue;
 
     public abstract Position positionField(String name, Position value)
             throws InvalidFieldValue;

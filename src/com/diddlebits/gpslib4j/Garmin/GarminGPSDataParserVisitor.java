@@ -47,7 +47,7 @@ public class GarminGPSDataParserVisitor extends GarminGPSDataVisitor {
     }
 
     public double floatField(int type, String name, double value,
-            double minValue, double maxValue) throws InvalidFieldValue {
+            FloatSpecification spec) throws InvalidFieldValue {
         if (IsVirtualField(name))
             return value;
         switch (type) {
@@ -62,14 +62,14 @@ public class GarminGPSDataParserVisitor extends GarminGPSDataVisitor {
     }
 
     public String stringField(int type, String name, String value,
-            int maxLength, StringValidator validator) throws InvalidFieldValue {
+            StringValidator validator) throws InvalidFieldValue {
         if (IsVirtualField(name))
             return value;
 
         String result;
         switch (type) {
         case GarminPacket.ACHAR:
-            result = source.readFixedLengthString(maxLength);
+            result = source.readFixedLengthString(validator.getMaxLength());
             break;
         case GarminPacket.VCHAR:
             result = source.readNullTerminatedString();
@@ -78,8 +78,8 @@ public class GarminGPSDataParserVisitor extends GarminGPSDataVisitor {
             throw new InvalidFieldValue(name + " type", Integer.toString(type),
                     "Unknown data type (internal error)");
         }
-        
-        if(validator!=null) validator.throwIfInvalid(name, result);
+
+        validator.warningIfInvalid(name, result);
         return result;
     }
 
@@ -96,8 +96,12 @@ public class GarminGPSDataParserVisitor extends GarminGPSDataVisitor {
             return value;
         switch (type) {
         case GarminPacket.LONG_DATE:
-            int secs = source.readLong();
-            return new Date(secs + TimeOffset);
+            long secs = source.readLong();
+            if(secs!=0xFFFFFFFF && secs!=0 && secs!=0x7FFFFFFF) {
+                return new Date((secs + TimeOffset)*1000);
+            } else {
+                return null;
+            }
         case GarminPacket.STRUCT_DATE:
             int month = source.readByte();
             int day = source.readByte();
@@ -122,15 +126,16 @@ public class GarminGPSDataParserVisitor extends GarminGPSDataVisitor {
                 definition.getMaxValue(), definition.getMaxValue() + 1);
     }
 
-
     public void startEntry(String type) {
         source.pointer2start();
     }
 
     public void endEntry() throws InvalidFieldValue {
         // check we read the whole packet
-        if(source.getPointer()!=source.getLength()-3) {
-            throw new InvalidFieldValue("read", String.valueOf(source.getPointer()), "data length="+String.valueOf(source.getLength()-3));
+        if (source.getPointer() != source.getLength() - 3) {
+            throw new InvalidFieldValue("read", String.valueOf(source
+                    .getPointer()), "data length="
+                    + String.valueOf(source.getLength() - 3));
         }
     }
 }

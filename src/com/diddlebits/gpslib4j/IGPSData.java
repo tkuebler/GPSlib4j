@@ -6,7 +6,7 @@ package com.diddlebits.gpslib4j;
  * @author patrick
  * 
  */
-public interface IGPSData {
+public interface IGPSData extends Cloneable {
     public String toString();
 
     /**
@@ -26,4 +26,10 @@ public interface IGPSData {
      * @throws InvalidFieldValue
      */
     public void visit(IGPSDataWriteVisitor visitor) throws InvalidFieldValue;
+
+    /**
+     * Will use the Object.clone() method all the time, since all attributes
+     * IGPSData childs are immutable.
+     */
+    Object clone() throws CloneNotSupportedException;
 }

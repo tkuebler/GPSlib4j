@@ -29,14 +29,14 @@ public class ToStringGPSDataReadVisitor implements IGPSDataReadVisitor {
     }
 
     public void floatField(String name, boolean isDefined, double value,
-            double minValue, double maxValue) {
+            FloatSpecification spec) {
         if (isDefined) {
-            string.append("  " + name + "=" + value + "\n");
+            string.append("  " + name + "=" + spec.toPrecision(value) + "\n");
         }
     }
 
     public void stringField(String name, boolean isDefined, String value,
-            int maxLength, StringValidator validator) {
+            StringValidator validator) {
         if (isDefined) {
             string.append("  " + name + "='" + value + "'\n");
         }

@@ -6,9 +6,10 @@ public abstract class StringValidator {
      */
     public void throwIfInvalid(String fieldName, String txt)
             throws InvalidFieldValue {
-        if (!checkSyntax(txt)) {
+        String ret = checkSyntax(txt);
+        if (ret != null) {
             throw new InvalidFieldValue(fieldName, txt,
-                    "Invalid string content (" + getSyntax() + ")");
+                    "Invalid string content: " + ret);
         }
     }
 
@@ -17,12 +18,30 @@ public abstract class StringValidator {
      * 
      * @param txt
      *            What to check
-     * @return True if good.
+     * @return NULL if good, an error message if not.
      */
-    public abstract boolean checkSyntax(String txt);
+    public abstract String checkSyntax(String txt);
 
     /**
      * @return A text describing the syntax of what's allowed.
      */
     public abstract String getSyntax();
+
+    /**
+     * @return The maximum length of the string.
+     */
+    public abstract int getMaxLength();
+
+    /**
+     * @return True if an empty string is allowed.
+     */
+    public abstract boolean isEmptyAllowed();
+
+    public void warningIfInvalid(String fieldName, String txt) {
+        String ret = checkSyntax(txt);
+        if (ret != null) {
+            System.out.println("Invalid string content for field " + fieldName
+                    + ": " + ret);
+        }
+    }
 }

@@ -17,11 +17,14 @@ public class TimeDataPacket600 extends GarminPacket implements ITimeDate {
      * Treats the packet p as a packet containing Time-data. Throws
      * PacketNotRecognizedException if p is not a Time-packet. Throws
      * InvalidPacketException if the packet contains too little data.
-     * @throws InvalidFieldValue 
-     * @throws PacketNotRecognizedException 
-     * @throws InvalidPacketException 
+     * 
+     * @throws InvalidFieldValue
+     * @throws PacketNotRecognizedException
+     * @throws InvalidPacketException
      */
-    public TimeDataPacket600(GarminRawPacket p) throws PacketNotRecognizedException, InvalidFieldValue, InvalidPacketException {
+    public TimeDataPacket600(GarminRawPacket p)
+            throws PacketNotRecognizedException, InvalidFieldValue,
+            InvalidPacketException {
         super();
 
         if (p.getID() != GarminRawPacket.Pid_Date_Time_Data) {
