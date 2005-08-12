@@ -67,7 +67,7 @@ public class Position {
         int intPart=(int)Math.floor(lat);
         double minutes=(lat-intPart)*60.0;
         Object params[]={new Character(direction), new Integer(intPart), new Double(minutes)};
-        return String.format("%c%02d'%02.3f", params);
+        return String.format("%c%02d'%06.3f", params);
     }
 
     public static String Longitude2DM(double lon) {
@@ -79,7 +79,7 @@ public class Position {
         int intPart=(int)Math.floor(lon);
         double minutes=(lon-intPart)*60.0;
         Object params[]={new Character(direction), new Integer(intPart), new Double(minutes)};
-        return String.format("%c%03d'%02.3f", params);
+        return String.format("%c%03d'%06.3f", params);
     }
 
     public String toString() {
