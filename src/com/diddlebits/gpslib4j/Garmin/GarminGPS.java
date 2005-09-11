@@ -5,29 +5,25 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.util.Vector;
 
-import com.diddlebits.gpslib4j.*;
+import com.diddlebits.gpslib4j.FeatureNotSupportedException;
+import com.diddlebits.gpslib4j.GPS;
+import com.diddlebits.gpslib4j.IGPSFactory;
+import com.diddlebits.gpslib4j.ILap;
+import com.diddlebits.gpslib4j.IPosition;
+import com.diddlebits.gpslib4j.IRouteHeader;
+import com.diddlebits.gpslib4j.IRouteWaypoint;
+import com.diddlebits.gpslib4j.ITimeDate;
+import com.diddlebits.gpslib4j.ITrackpoint;
+import com.diddlebits.gpslib4j.ITrackpointHeader;
+import com.diddlebits.gpslib4j.IWaypoint;
+import com.diddlebits.gpslib4j.InvalidFieldValue;
 
 /**
  * Implementation of the GPS interface for Garmin.
  */
-public class GarminGPS extends GPS implements Runnable {
-    /** Communication input stream */
-    protected GarminInputStream input;
-
-    /** Communication output stream */
-    protected GarminOutputStream output;
-
+public class GarminGPS extends GPS {
     /** A human-readable description of the GPS-unit. */
     protected String description;
-
-    /** The listening thread */
-    protected Thread listener;
-
-    /**
-     * The listening thread will be active as long as this variable remains
-     * true.
-     */
-    protected boolean active;
 
     /** What is the current request */
     protected int currentTask = -1;
@@ -38,20 +34,27 @@ public class GarminGPS extends GPS implements Runnable {
     /** A vector containing references to all the GarminListeners. */
     protected Vector GarminListeners;
 
-    public GarminGPS(BufferedInputStream i, BufferedOutputStream o,
-            ITransferListener toNotifyWhenInit) {
-        super(toNotifyWhenInit);
-        input = new GarminInputStream(i);
-        output = new GarminOutputStream(o);
-        listener = new Thread(this);
-        listener.start();
-        active = true;
-        GarminListeners = new Vector();
+    /** Communication input stream */
+    protected GarminInputStream input;
 
-        startConnect();
+    /** Communication output stream */
+    protected GarminOutputStream output;
+
+    public GarminGPS() {
+        super();
+        GarminListeners = new Vector();
     }
 
-    private void startConnect() {
+    public void connectGPS(BufferedInputStream i, BufferedOutputStream o)
+            throws FeatureNotSupportedException {
+        if (input != null || output != null) {
+            throw new FeatureNotSupportedException();
+        }
+        input = new GarminInputStream(i);
+        output = new GarminOutputStream(o);
+
+        super.connectGPS(i, o);
+
         // Request product information.
         try {
             // abort any current transfer
@@ -61,8 +64,7 @@ public class GarminGPS extends GPS implements Runnable {
                     GarminRawPacket.Pid_Product_Rqst, new int[] {}));
         } catch (IOException e) {
         } catch (InvalidPacketException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            fireError(e);
         }
     }
 
@@ -96,79 +98,6 @@ public class GarminGPS extends GPS implements Runnable {
         }
     }
 
-    /** This method is listening for input from the GPS. */
-    public void run() {
-        GarminRawPacket pack = null;
-
-        while (active) {
-            // try to get something from the GPS
-            try {
-                if (input.available() == 0) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                    }
-                    continue;
-                }
-                pack = new GarminRawPacket(input.readPacket());
-            } catch (IOException e) {
-                active = false;
-                return;
-            } catch (InvalidPacketException e) {
-                fireError(e);
-                // Send back a NAK-packet.
-                try {
-                    output.write(GarminRawPacket.createBasicPacket(
-                            GarminRawPacket.Pid_Nak_Byte, new int[] {
-                                    pack.getID(), 0 }));
-                } catch (IOException ex) {
-                    active = false;
-                    fireError(ex);
-                    return;
-                } catch (InvalidPacketException ex) {
-                    // TODO Auto-generated catch block
-                    ex.printStackTrace();
-                    active = false;
-                    fireError(ex);
-                    return;
-                }
-            }
-
-            // notifiy the raw packet listeners
-            fireGarminPacket(pack);
-
-            // parse and send the packet to the listeners
-            try {
-                int answer = distribute(pack);
-                if (answer >= 0) {
-                    // Send back a packet.
-                    try {
-                        output.write(GarminRawPacket.createBasicPacket(answer,
-                                new int[] { pack.getID(), 0 }));
-                    } catch (IOException e) {
-                        active = false;
-                    }
-                }
-            } catch (Exception e) {
-                // notify the listeners about the error
-                fireError(e);
-
-                try {
-                    output.write(GarminRawPacket.createBasicPacket(
-                            GarminRawPacket.Pid_Nak_Byte, new int[] {
-                                    pack.getID(), 0 }));
-                } catch (IOException io) {
-                    active = false;
-                    fireError(io);
-                } catch (InvalidPacketException ex) {
-                    // TODO Auto-generated catch block
-                    ex.printStackTrace();
-                    fireError(ex);
-                }
-            }
-        } // End of while
-    }
-
     /**
      * This method is used to identify the type of packet received, parse it and
      * distribute it to the correct listeners.
@@ -183,45 +112,83 @@ public class GarminGPS extends GPS implements Runnable {
             ProtocolNotSupportedException, PacketNotRecognizedException,
             InvalidFieldValue, InvalidPacketException {
         switch (p.getID()) {
-        case GarminRawPacket.Pid_Position_Data:
-            firePositionData(GarminFactory.Get().createPosition(p));
+        case GarminRawPacket.Pid_Position_Data: {
+            IPosition result = GarminFactory.Get().createPosition();
+            ((GarminPacket) result).initFromRawPacket(p);
+            firePositionData(result);
             return GarminRawPacket.Pid_Ack_Byte;
-        case GarminRawPacket.Pid_Date_Time_Data:
-            ITimeDate time = GarminFactory.Get().createTimeDate(p);
-            fireTimeDateData(time);
+        }
+
+        case GarminRawPacket.Pid_Date_Time_Data: {
+            ITimeDate result = GarminFactory.Get().createTimeDate();
+            ((GarminPacket) result).initFromRawPacket(p);
+            fireTimeDateData(result);
             return GarminRawPacket.Pid_Ack_Byte;
-        case GarminRawPacket.Pid_Pvt_Data:
-            IPosition pvtp = GarminFactory.Get().createPVT(p);
-            firePositionData(pvtp);
+        }
+
+        case GarminRawPacket.Pid_Pvt_Data: {
+            IPosition result = GarminFactory.Get().createPVT();
+            ((GarminPacket) result).initFromRawPacket(p);
+            firePositionData(result);
             return -1;
-        case GarminRawPacket.Pid_Records:
-            records = GarminFactory.Get().createRecords(p).getNumber();
+        }
+
+        case GarminRawPacket.Pid_Records: {
+            RecordsPacket result = GarminFactory.Get().createRecords();
+            result.initFromRawPacket(p);
+            records = result.getNumber();
             fireTransferStart(records);
             return GarminRawPacket.Pid_Ack_Byte;
-        case GarminRawPacket.Pid_Wpt_Data:
-            fireWaypointData(GarminFactory.Get().createWaypoint(p));
+        }
+
+        case GarminRawPacket.Pid_Wpt_Data: {
+            IWaypoint result = GarminFactory.Get().createWaypoint();
+            ((GarminPacket) result).initFromRawPacket(p);
+            fireWaypointData(result);
             return GarminRawPacket.Pid_Ack_Byte;
-        case GarminRawPacket.Pid_Trk_data:
-            fireTrackpointData(GarminFactory.Get().createTrackpoint(p));
+        }
+
+        case GarminRawPacket.Pid_Trk_data: {
+            ITrackpoint result = GarminFactory.Get().createTrackpoint();
+            ((GarminPacket) result).initFromRawPacket(p);
+            fireTrackpointData(result);
             return GarminRawPacket.Pid_Ack_Byte;
-        case GarminRawPacket.Pid_Trk_Hdr:
-            fireTrackpointHeader(GarminFactory.Get().createTrackpointHeader(p));
+        }
+
+        case GarminRawPacket.Pid_Trk_Hdr: {
+            ITrackpointHeader result = GarminFactory.Get()
+                    .createTrackpointHeader();
+            ((GarminPacket) result).initFromRawPacket(p);
+            fireTrackpointHeader(result);
             return GarminRawPacket.Pid_Ack_Byte;
-        case GarminRawPacket.Pid_Rte_Hdr:
-            fireRouteHeader(GarminFactory.Get().createRouteHeader(p));
+        }
+
+        case GarminRawPacket.Pid_Rte_Hdr: {
+            IRouteHeader result = GarminFactory.Get().createRouteHeader();
+            ((GarminPacket) result).initFromRawPacket(p);
+            fireRouteHeader(result);
             return GarminRawPacket.Pid_Ack_Byte;
-        case GarminRawPacket.Pid_Rte_Wpt_Data:
-            fireRouteWaypoint(GarminFactory.Get().createRouteWaypoint(p));
+        }
+
+        case GarminRawPacket.Pid_Rte_Wpt_Data: {
+            IRouteWaypoint result = GarminFactory.Get().createRouteWaypoint();
+            ((GarminPacket) result).initFromRawPacket(p);
+            fireRouteWaypoint(result);
             return GarminRawPacket.Pid_Ack_Byte;
-        case GarminRawPacket.Pid_Lap:
-            fireLapData(GarminFactory.Get().createLap(p));
+        }
+
+        case GarminRawPacket.Pid_Lap: {
+            ILap result = GarminFactory.Get().createLap();
+            ((GarminPacket) result).initFromRawPacket(p);
+            fireLapData(result);
             return GarminRawPacket.Pid_Ack_Byte;
+        }
         case GarminRawPacket.Pid_Xfer_Cmplt:
-            System.out.println("Transfer Complete");
             currentTask = -1;
             fireTransferComplete();
             return GarminRawPacket.Pid_Ack_Byte;
-        case GarminRawPacket.Pid_Product_Data:
+
+        case GarminRawPacket.Pid_Product_Data: {
             ProductDataPacket pp = GarminFactory.Get()
                     .createProductDataAndInitFromIt(p);
             description = pp.getDescription();
@@ -232,15 +199,18 @@ public class GarminGPS extends GPS implements Runnable {
                 fireTransferComplete();
             }
             return GarminRawPacket.Pid_Ack_Byte;
-        case GarminRawPacket.Pid_Protocol_Array:
+        }
+
+        case GarminRawPacket.Pid_Protocol_Array: {
             description += "\nProtocols supported:\n";
             description += (GarminFactory.Get()
                     .createProtocolArrayAndInitFromIt(p)).toString();
             fireTransferComplete();
             return GarminRawPacket.Pid_Ack_Byte;
-        case GarminRawPacket.Pid_Ack_Byte:
+        }
+
+        case GarminRawPacket.Pid_Ack_Byte: {
             // ack packet
-            System.out.println("ACK received");
             if (currentTask >= 0) {
                 // TODO: find a way to make the difference between an ACK for a
                 // command with data following and a ack from a command without
@@ -249,6 +219,8 @@ public class GarminGPS extends GPS implements Runnable {
                 // fireTransferComplete();
             }
             return -1;
+        }
+
         default:
             System.out.println("Unknown packet type received: id=" + p.getID()
                     + ", data=" + p.getRawPacket());
@@ -267,8 +239,6 @@ public class GarminGPS extends GPS implements Runnable {
         try {
             output.write(GarminRawPacket.createCommandPacket(currentTask));
         } catch (InvalidPacketException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
             throw new FeatureNotSupportedException();
         }
     }
@@ -283,8 +253,6 @@ public class GarminGPS extends GPS implements Runnable {
         try {
             output.write(GarminRawPacket.createCommandPacket(currentTask));
         } catch (InvalidPacketException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
             throw new FeatureNotSupportedException();
         }
     }
@@ -299,8 +267,6 @@ public class GarminGPS extends GPS implements Runnable {
         try {
             output.write(GarminRawPacket.createCommandPacket(currentTask));
         } catch (InvalidPacketException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
             throw new FeatureNotSupportedException();
         }
     }
@@ -316,8 +282,6 @@ public class GarminGPS extends GPS implements Runnable {
         try {
             output.write(GarminRawPacket.createCommandPacket(currentTask));
         } catch (InvalidPacketException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
             throw new FeatureNotSupportedException();
         }
     }
@@ -333,8 +297,6 @@ public class GarminGPS extends GPS implements Runnable {
         try {
             output.write(GarminRawPacket.createCommandPacket(currentTask));
         } catch (InvalidPacketException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
             throw new FeatureNotSupportedException();
         }
     }
@@ -350,8 +312,6 @@ public class GarminGPS extends GPS implements Runnable {
         try {
             output.write(GarminRawPacket.createCommandPacket(currentTask));
         } catch (InvalidPacketException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
             throw new FeatureNotSupportedException();
         }
     }
@@ -366,8 +326,6 @@ public class GarminGPS extends GPS implements Runnable {
         try {
             output.write(GarminRawPacket.createCommandPacket(currentTask));
         } catch (InvalidPacketException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
             throw new FeatureNotSupportedException();
         }
     }
@@ -391,8 +349,6 @@ public class GarminGPS extends GPS implements Runnable {
                 output.write(GarminRawPacket.createCommandPacket(currentTask));
             }
         } catch (InvalidPacketException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
             throw new FeatureNotSupportedException();
         }
     }
@@ -411,8 +367,6 @@ public class GarminGPS extends GPS implements Runnable {
             try {
                 output.write(GarminRawPacket.createCommandPacket(currentTask));
             } catch (InvalidPacketException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
                 throw new FeatureNotSupportedException();
             }
         }
@@ -426,4 +380,65 @@ public class GarminGPS extends GPS implements Runnable {
     public String getDescription() {
         return description;
     }
+
+    public IGPSFactory getFactory() {
+        return GarminFactory.Get();
+    }
+
+    protected void sendNack() throws IOException, InvalidPacketException {
+        output.write(GarminRawPacket.createBasicPacket(
+                GarminRawPacket.Pid_Nak_Byte, new int[] {
+                        0/* TODO: what value to put here? */, 0 }));
+    }
+
+    protected void handleInput() throws InvalidPacketException, IOException {
+        GarminRawPacket pack = new GarminRawPacket(input.readPacket());
+        // notifiy the raw packet listeners
+        fireGarminPacket(pack);
+
+        // parse and send the packet to the listeners
+        try {
+            int answer = distribute(pack);
+            if (answer >= 0) {
+                // Send back a packet.
+                try {
+                    output.write(GarminRawPacket.createBasicPacket(answer,
+                            new int[] { pack.getID(), 0 }));
+                } catch (IOException e) {
+                    active = false;
+                }
+            }
+        } catch (Exception e) {
+            // notify the listeners about the error
+            fireError(e);
+
+            try {
+                output.write(GarminRawPacket.createBasicPacket(
+                        GarminRawPacket.Pid_Nak_Byte, new int[] { pack.getID(),
+                                0 }));
+            } catch (IOException io) {
+                active = false;
+                fireError(io);
+            } catch (InvalidPacketException ex) {
+                fireError(ex);
+            }
+        }
+    }
+
+    protected int inputAvailable() throws IOException {
+        return input.available();
+    }
+
+    protected void disconnectGPS() {
+        try {
+            input.close();
+            output.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+        input = null;
+        output = null;
+    }
+
 }
