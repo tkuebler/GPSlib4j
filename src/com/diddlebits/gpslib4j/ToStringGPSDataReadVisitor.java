@@ -22,7 +22,7 @@ public class ToStringGPSDataReadVisitor implements IGPSDataReadVisitor {
     }
 
     public void intField(String name, boolean isDefined, long value,
-            long minValue, long maxValue) {
+            IntegerSpecification spec) {
         if (isDefined) {
             string.append("  " + name + "=" + value + "\n");
         }

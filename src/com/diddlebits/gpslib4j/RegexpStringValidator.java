@@ -9,10 +9,10 @@ public class RegexpStringValidator extends StringValidator {
 
     private int maxLength;
 
-    private boolean emptyAllowed;
-
     public RegexpStringValidator(String fieldName, String expression,
-            int xMaxLength, boolean xEmptyAllowed) throws InvalidFieldValue {
+            int xMaxLength, boolean xEmptyAllowed)
+            throws InvalidFieldValue {
+        super(xEmptyAllowed);
         try {
             regexp = Pattern.compile(expression);
         } catch (PatternSyntaxException e) {
@@ -20,40 +20,35 @@ public class RegexpStringValidator extends StringValidator {
                     "Invalid regexp: " + e.toString());
         }
         maxLength = xMaxLength;
-        emptyAllowed = xEmptyAllowed;
     }
 
     public String checkSyntax(String txt) {
-        if(txt==null || txt.length()==0) {
-            if(emptyAllowed) {
+        if (txt == null || txt.length() == 0) {
+            if (emptyAllowed) {
                 return null;
             } else {
                 return "Cannot be empty";
             }
         }
-        
-        if(txt.length()>maxLength) {
-            return "Too long (>"+maxLength+")";
+
+        if (txt.length() > maxLength) {
+            return "Too long (>" + maxLength + ")";
         }
-        
+
         Matcher matcher = regexp.matcher(txt);
-        if(!matcher.matches()) {
-            return "Doesn't match expression /"+regexp.toString()+"/";
+        if (!matcher.matches()) {
+            return "Doesn't match expression /" + regexp.toString() + "/";
         }
         return null;
     }
 
     public String getSyntax() {
-        return "/" + regexp.toString() + "/ length<="+maxLength+" emptyAllowed="+emptyAllowed;
+        return "/" + regexp.toString() + "/ length<=" + maxLength
+                + " emptyAllowed=" + emptyAllowed;
     }
 
     public int getMaxLength() {
         return maxLength;
-    }
-
-    public boolean isEmptyAllowed() {
-        // TODO Auto-generated method stub
-        return emptyAllowed;
     }
 
 }

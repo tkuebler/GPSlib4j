@@ -1,6 +1,12 @@
 package com.diddlebits.gpslib4j;
 
 public abstract class StringValidator {
+    protected boolean emptyAllowed;
+
+    StringValidator(boolean xEmptyAllowed) {
+        emptyAllowed = xEmptyAllowed;
+    }
+
     /**
      * Check if the string is valid and raise an exception if not
      */
@@ -35,7 +41,9 @@ public abstract class StringValidator {
     /**
      * @return True if an empty string is allowed.
      */
-    public abstract boolean isEmptyAllowed();
+    public boolean isEmptyAllowed() {
+        return emptyAllowed;
+    }
 
     public void warningIfInvalid(String fieldName, String txt) {
         String ret = checkSyntax(txt);

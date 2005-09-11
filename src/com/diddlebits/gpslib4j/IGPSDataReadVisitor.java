@@ -46,13 +46,11 @@ public interface IGPSDataReadVisitor {
      *            True if the field is defined.
      * @param value
      *            The value of the field.
-     * @param minValue
-     *            The minimum value.
-     * @param maxValue
-     *            The maximum value.
+     * @param spec
+     *            The specification of what is allowed.
      */
-    void intField(String name, boolean isDefined, long value, long minValue,
-            long maxValue);
+    void intField(String name, boolean isDefined, long value,
+            IntegerSpecification spec);
 
     /**
      * Called for each float fields.

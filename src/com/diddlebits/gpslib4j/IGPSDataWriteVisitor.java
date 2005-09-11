@@ -54,16 +54,14 @@ public interface IGPSDataWriteVisitor {
      *            True if the field is defined.
      * @param value
      *            The value of the field.
-     * @param minValue
-     *            The minimum value.
-     * @param maxValue
-     *            The maximum value.
+     * @param spec
+     *            The specification of what is allowed.
      * @return The new value.
      * @throws NullField
      *             if the field has to be set to NULL.
      */
-    long intField(String name, boolean isDefined, long value, long minValue,
-            long maxValue) throws NullField, InvalidFieldValue;
+    long intField(String name, boolean isDefined, long value,
+            IntegerSpecification spec) throws NullField, InvalidFieldValue;
 
     /**
      * Called for each float fields.
@@ -92,8 +90,6 @@ public interface IGPSDataWriteVisitor {
      *            True if the field is defined.
      * @param value
      *            The value of the field.
-     * @param maxLength
-     *            The maximum number of characters in the string
      * @param validator
      *            An object used to validate the string.
      * @return The new value or NULL.
