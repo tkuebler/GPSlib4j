@@ -1,12 +1,22 @@
 package com.diddlebits.gpslib4j.Garmin;
 
-import com.diddlebits.gpslib4j.*;
+import com.diddlebits.gpslib4j.FeatureNotSupportedException;
+import com.diddlebits.gpslib4j.IGPSFactory;
+import com.diddlebits.gpslib4j.ILap;
+import com.diddlebits.gpslib4j.IPosition;
+import com.diddlebits.gpslib4j.IRouteHeader;
+import com.diddlebits.gpslib4j.IRouteWaypoint;
+import com.diddlebits.gpslib4j.ITimeDate;
+import com.diddlebits.gpslib4j.ITrackpoint;
+import com.diddlebits.gpslib4j.ITrackpointHeader;
+import com.diddlebits.gpslib4j.IWaypoint;
+import com.diddlebits.gpslib4j.InvalidFieldValue;
 
 /**
  * Factory that is able to create the good packet class in function of the GPS's
  * capabilities.
  */
-public class GarminFactory {
+public class GarminFactory implements IGPSFactory {
     // All the possible commands
     // ---------------------------------------------------
     // to get the real command ID, use getCommandId.
@@ -233,146 +243,132 @@ public class GarminFactory {
 
     public ProtocolDataPacket createProtocolArrayAndInitFromIt(GarminRawPacket p)
             throws ProtocolNotRecognizedException,
-            PacketNotRecognizedException, InvalidPacketException {
+            PacketNotRecognizedException, InvalidPacketException,
+            InvalidFieldValue {
         protocols = new ProtocolDataPacket(p);
         return protocols;
     }
 
-    public ITimeDate createTimeDate(GarminRawPacket p)
-            throws ProtocolNotRecognizedException,
-            ProtocolNotSupportedException, PacketNotRecognizedException,
-            InvalidFieldValue, InvalidPacketException {
+    public ITimeDate createTimeDate() throws ProtocolNotRecognizedException,
+            ProtocolNotSupportedException {
         int proto = getDataPacketVersion(600);
         switch (proto) {
         case 600:
-            return new TimeDataPacket600(p);
+            return new TimeDataPacket600();
         default:
             throw new ProtocolNotSupportedException('D', proto);
         }
     }
 
-    public ILap createLap(GarminRawPacket p)
-            throws ProtocolNotRecognizedException,
-            PacketNotRecognizedException, ProtocolNotSupportedException,
-            InvalidFieldValue {
+    public ILap createLap() throws ProtocolNotRecognizedException,
+            ProtocolNotSupportedException {
         int proto = getDataPacketVersion(900);
         switch (proto) {
         case 906:
-            return new LapDataPacket906(p);
+            return new LapDataPacket906();
         default:
             throw new ProtocolNotSupportedException('D', proto);
         }
     }
 
-    public IPosition createPosition(GarminRawPacket p)
-            throws ProtocolNotRecognizedException,
-            PacketNotRecognizedException, ProtocolNotSupportedException,
-            InvalidFieldValue {
+    public IPosition createPosition() throws ProtocolNotRecognizedException,
+            ProtocolNotSupportedException {
         int proto = getDataPacketVersion(700);
         switch (proto) {
         case 700:
-            return new PositionDataPacket700(p);
+            return new PositionDataPacket700();
         default:
             throw new ProtocolNotSupportedException('D', proto);
         }
     }
 
-    public ITrackpoint createTrackpoint(GarminRawPacket p)
+    public ITrackpoint createTrackpoint()
             throws ProtocolNotRecognizedException,
-            PacketNotRecognizedException, ProtocolNotSupportedException,
-            InvalidFieldValue {
+            ProtocolNotSupportedException {
         int proto = getDataPacketVersion(300);
         switch (proto) {
         case 300:
-            return new TrackpointDataPacket300(p);
+            return new TrackpointDataPacket300();
         case 301:
-            return new TrackpointDataPacket301(p);
+            return new TrackpointDataPacket301();
         case 302:
-            return new TrackpointDataPacket302(p);
+            return new TrackpointDataPacket302();
         default:
             throw new ProtocolNotSupportedException('D', proto);
         }
     }
 
-    public ITrackpointHeader createTrackpointHeader(GarminRawPacket p)
+    public ITrackpointHeader createTrackpointHeader()
             throws ProtocolNotRecognizedException,
-            PacketNotRecognizedException, ProtocolNotSupportedException,
-            InvalidFieldValue {
+            ProtocolNotSupportedException {
         int proto = getDataPacketVersion(310);
         switch (proto) {
         case 310:
-            return new TrackpointHeaderPacket310(p);
+            return new TrackpointHeaderPacket310();
         case 311:
-            return new TrackpointHeaderPacket311(p);
+            return new TrackpointHeaderPacket311();
         case 312:
-            return new TrackpointHeaderPacket312(p);
+            return new TrackpointHeaderPacket312();
         default:
             throw new ProtocolNotSupportedException('D', proto);
         }
     }
 
-    public IWaypoint createWaypoint(GarminRawPacket p)
-            throws ProtocolNotRecognizedException,
-            PacketNotRecognizedException, ProtocolNotSupportedException,
-            InvalidFieldValue {
+    public IWaypoint createWaypoint() throws ProtocolNotRecognizedException,
+            ProtocolNotSupportedException {
         int proto = getDataPacketVersion(100);
         switch (proto) {
         case 103:
-            return new WaypointDataPacket103(p);
+            return new WaypointDataPacket103();
         case 108:
-            return new WaypointDataPacket108(p);
+            return new WaypointDataPacket108();
         case 109:
-            return new WaypointDataPacket109(p);
+            return new WaypointDataPacket109();
         default:
             throw new ProtocolNotSupportedException('D', proto);
         }
     }
 
-    public IPosition createPVT(GarminRawPacket p)
-            throws ProtocolNotRecognizedException,
-            PacketNotRecognizedException, ProtocolNotSupportedException,
-            InvalidFieldValue {
+    public IPosition createPVT() throws ProtocolNotRecognizedException,
+            ProtocolNotSupportedException {
         int proto = getDataPacketVersion(800);
         switch (proto) {
         case 800:
-            return new PVTDataPacket800(p);
+            return new PVTDataPacket800();
         default:
             throw new ProtocolNotSupportedException('D', proto);
         }
     }
 
-    public RecordsPacket createRecords(GarminRawPacket p)
-            throws PacketNotRecognizedException, InvalidFieldValue,
-            InvalidPacketException {
+    public RecordsPacket createRecords() throws ProtocolNotRecognizedException,
+            ProtocolNotSupportedException {
         // low level stuff, not versioned
-        return new RecordsPacket(p);
+        return new RecordsPacket();
     }
 
-    public IRouteHeader createRouteHeader(GarminRawPacket p)
+    public IRouteHeader createRouteHeader()
             throws ProtocolNotRecognizedException,
-            ProtocolNotSupportedException, PacketNotRecognizedException,
-            InvalidFieldValue {
+            ProtocolNotSupportedException {
         int proto = getDataPacketVersion(200);
         switch (proto) {
         case 200:
-            return new RouteHeaderPacket200(p);
+            return new RouteHeaderPacket200();
         case 201:
-            return new RouteHeaderPacket201(p);
+            return new RouteHeaderPacket201();
         case 202:
-            return new RouteHeaderPacket202(p);
+            return new RouteHeaderPacket202();
         default:
             throw new ProtocolNotSupportedException('D', proto);
         }
     }
 
-    public IRouteWaypoint createRouteWaypoint(GarminRawPacket p)
+    public IRouteWaypoint createRouteWaypoint()
             throws ProtocolNotRecognizedException,
-            ProtocolNotSupportedException, PacketNotRecognizedException,
-            InvalidFieldValue {
+            ProtocolNotSupportedException {
         int proto = getDataPacketVersion(210);
         switch (proto) {
         case 210:
-            return new RouteWaypointPacket210(p);
+            return new RouteWaypointPacket210();
         default:
             throw new ProtocolNotSupportedException('D', proto);
         }
