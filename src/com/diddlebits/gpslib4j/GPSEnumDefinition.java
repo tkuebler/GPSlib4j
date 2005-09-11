@@ -5,20 +5,23 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 public class GPSEnumDefinition {
-    private HashMap names = new HashMap();
+    protected HashMap names = new HashMap();
 
-    private HashMap values = new HashMap();
+    protected HashMap values = new HashMap();
 
-    private HashMap graphs = new HashMap();
+    protected HashMap graphs = new HashMap();
 
     private int min = Integer.MAX_VALUE;
 
     private int max = Integer.MIN_VALUE;
 
-    private String name;
+    private boolean canBeNull;
 
-    public GPSEnumDefinition(String xName) {
+    protected String name;
+
+    public GPSEnumDefinition(String xName, boolean xCanBeNull) {
         name = xName;
+        canBeNull = xCanBeNull;
     }
 
     /**
@@ -48,7 +51,7 @@ public class GPSEnumDefinition {
      *             If the enum value is unknown.
      */
     public Object enumToGraph(int value) throws InvalidFieldValue {
-        Object ret = names.get(new Integer(value));
+        Object ret = graphs.get(new Integer(value));
         if (ret != null) {
             return ret;
         } else {
@@ -101,7 +104,15 @@ public class GPSEnumDefinition {
      */
     public void addValue(String name, int value, Object graph) {
         Integer intValue = new Integer(value);
+        if (values.containsKey(name)) {
+            throw new RuntimeException("An enum named '" + name
+                    + " already exists");
+        }
         values.put(name, intValue);
+        if (names.containsKey(intValue)) {
+            throw new RuntimeException("An enum with a value of '" + intValue
+                    + " already exists");
+        }
         names.put(intValue, name);
         if (graph != null)
             graphs.put(intValue, graph);
@@ -115,10 +126,24 @@ public class GPSEnumDefinition {
      * @return The list of string representations of the names.
      */
     public String[] getStrings() {
-        String[] ret=new String[names.size()];
-        Iterator it=names.values().iterator();
-        for(int cpt=0; cpt<ret.length && it.hasNext(); ++cpt) {
-            ret[cpt]=(String)it.next();
+        String[] ret = new String[names.size()];
+        Iterator it = names.values().iterator();
+        for (int cpt = 0; cpt < ret.length && it.hasNext(); ++cpt) {
+            ret[cpt] = (String) it.next();
+        }
+        Arrays.sort(ret);
+        return ret;
+    }
+
+    public boolean isCanBeNull() {
+        return canBeNull;
+    }
+
+    public Integer[] getValues() {
+        Integer[] ret = new Integer[names.size()];
+        Iterator it = names.keySet().iterator();
+        for (int cpt = 0; cpt < ret.length && it.hasNext(); ++cpt) {
+            ret[cpt] = (Integer) it.next();
         }
         Arrays.sort(ret);
         return ret;
