@@ -1,6 +1,10 @@
 package com.diddlebits.gpslib4j.examples;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -8,7 +12,21 @@ import javax.comm.CommPort;
 import javax.comm.CommPortIdentifier;
 import javax.comm.PortInUseException;
 
-import com.diddlebits.gpslib4j.*;
+import com.diddlebits.gpslib4j.FeatureNotSupportedException;
+import com.diddlebits.gpslib4j.GPS;
+import com.diddlebits.gpslib4j.IGPSlistener;
+import com.diddlebits.gpslib4j.ILap;
+import com.diddlebits.gpslib4j.ILapListener;
+import com.diddlebits.gpslib4j.IPosition;
+import com.diddlebits.gpslib4j.IRouteHeader;
+import com.diddlebits.gpslib4j.IRouteListener;
+import com.diddlebits.gpslib4j.IRouteWaypoint;
+import com.diddlebits.gpslib4j.ITimeDate;
+import com.diddlebits.gpslib4j.ITrackpoint;
+import com.diddlebits.gpslib4j.ITrackpointHeader;
+import com.diddlebits.gpslib4j.ITrackpointListener;
+import com.diddlebits.gpslib4j.IWaypoint;
+import com.diddlebits.gpslib4j.IWaypointListener;
 
 /**
  * A simple test-program that queries the GPS for a description of itself. <br/>
@@ -108,6 +126,8 @@ public class ConnectionTest implements IGPSlistener, IWaypointListener,
         testTrack();
         //testLap();
         testShutdown();
+        
+        port.close();
     }
 
     private void testRoute() {
@@ -377,7 +397,7 @@ public class ConnectionTest implements IGPSlistener, IWaypointListener,
     }
 
     /**
-     * @see com.diddlebits.gpslib4j.ITrackpointListener#trackpointHeaderReceived(com.diddlebits.gpslib4j.ITrackpoint)
+     * @see com.diddlebits.gpslib4j.ITrackpointListener#trackpointHeaderReceived(com.diddlebits.gpslib4j.ITrackpointHeader)
      */
     public void trackpointHeaderReceived(ITrackpointHeader tp) {
         System.out.println("Trackpoint header received by connection test: "

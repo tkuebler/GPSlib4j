@@ -1,14 +1,28 @@
 package com.diddlebits.gpslib4j.examples;
-import com.diddlebits.gpslib4j.services.*;
-import com.diddlebits.gpslib4j.Garmin.*;
-import javax.swing.*;
-import java.awt.event.*;
-import java.awt.*;
-import java.io.*;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
 
-import javax.comm.*;
+import javax.comm.CommPort;
+import javax.comm.CommPortIdentifier;
+import javax.comm.NoSuchPortException;
+import javax.comm.PortInUseException;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 
-import com.diddlebits.gpslib4j.*;
+import com.diddlebits.gpslib4j.FeatureNotSupportedException;
+import com.diddlebits.gpslib4j.GPS;
+import com.diddlebits.gpslib4j.IGPSlistener;
+import com.diddlebits.gpslib4j.IPosition;
+import com.diddlebits.gpslib4j.ITimeDate;
+import com.diddlebits.gpslib4j.ITransferListener;
+import com.diddlebits.gpslib4j.Position;
+import com.diddlebits.gpslib4j.services.AreaAlarm;
+import com.diddlebits.gpslib4j.services.IAlarmListener;
 
 public class AreaAlarmDemo extends JFrame implements ActionListener, IGPSlistener, IAlarmListener, ITransferListener {
     private static final long serialVersionUID=-6016081676813267654L;
@@ -86,14 +100,21 @@ public class AreaAlarmDemo extends JFrame implements ActionListener, IGPSlistene
 			return;
 		}		
 				
-		gps = new GarminGPS(input, output, this);
+		try {
+            gps = GPS.CreateInterface("GARMIN", input, output, this);
+        } catch (FeatureNotSupportedException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
         gps.addGPSlistener(this);
 		try {
             gps.setAutoTransmit(true);
         } catch (FeatureNotSupportedException e) {
             System.out.println("AutoTransmit mode not supported by this GPS");
+            System.exit(-1);
         } catch (IOException e) {
             System.out.println("Communication error");
+            System.exit(-1);
         }
 		
 		

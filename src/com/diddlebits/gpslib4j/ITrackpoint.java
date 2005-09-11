@@ -11,9 +11,5 @@ package com.diddlebits.gpslib4j;
  * 
  * @author tkuebler
  */
-public interface ITrackpoint extends IGPSData, ITimeDate {
-    /**
-     * @return The position of the trackpoint.
-     */
-    public Position getPosition();
+public interface ITrackpoint extends IGPSData, ITimeDate, IPosition {
 }
