@@ -30,11 +30,8 @@ public class TrackpointDataPacket300 extends GarminPacket implements
      * @throws PacketNotRecognizedException
      */
 
-    public TrackpointDataPacket300(GarminRawPacket p)
-            throws PacketNotRecognizedException, InvalidFieldValue {
+    public TrackpointDataPacket300() {
         super();
-
-        initFromRawPacket(p);
     }
 
     public int getIndex() {

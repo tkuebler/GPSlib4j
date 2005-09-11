@@ -1,5 +1,6 @@
 package com.diddlebits.gpslib4j.Garmin;
 
+import com.diddlebits.gpslib4j.IntegerSpecification;
 import com.diddlebits.gpslib4j.InvalidFieldValue;
 import com.diddlebits.gpslib4j.RegexpStringValidator;
 import com.diddlebits.gpslib4j.StringValidator;
@@ -12,6 +13,15 @@ public class ProtocolDataPacket extends GarminPacket {
 
     private static StringValidator TagValidator;
 
+    protected static IntegerSpecification DataSpecification = new IntegerSpecification(
+            0, 0xFFFF, false);
+
+    public ProtocolDataPacket(GarminRawPacket p)
+            throws PacketNotRecognizedException, InvalidFieldValue {
+        super();
+        initFromRawPacket(p);
+    }
+
     /**
      * Treats the packet p as a packet containing data about which protocols the
      * GPS support. Throws PacketNotRecognizedException if p is not a
@@ -20,16 +30,16 @@ public class ProtocolDataPacket extends GarminPacket {
      * @throws PacketNotRecognizedException
      * @throws InvalidPacketException
      */
-    public ProtocolDataPacket(GarminRawPacket p)
-            throws PacketNotRecognizedException, InvalidPacketException {
-        super();
+    public void initFromRawPacket(GarminRawPacket p)
+            throws PacketNotRecognizedException, InvalidFieldValue {
         if (p.getID() != GarminRawPacket.Pid_Protocol_Array) {
             throw (new PacketNotRecognizedException(
                     GarminRawPacket.Pid_Protocol_Array, p.getID()));
         }
 
         if (p.getDataLength() % 3 != 0) {
-            throw (new InvalidPacketException(p.packet, 2));
+            throw (new InvalidFieldValue("length", String.valueOf(p
+                    .getDataLength()), "Not a multiple of 3"));
         }
 
         // Don't use initFromRawPacket since it cannot handle loops for the
@@ -75,8 +85,8 @@ public class ProtocolDataPacket extends GarminPacket {
             tag = visitor.stringField(ACHAR, "tag" + i, tag, GetTagValidator());
             tags[i] = tag.charAt(0);
 
-            data[i] = (int) visitor.intField(UINT16, "data" + i, data[i], 0,
-                    0xFFFF, 0x8000);
+            data[i] = (int) visitor.intField(UINT16, "data" + i, data[i],
+                    DataSpecification, 0x10000);
         }
     }
 

@@ -9,7 +9,7 @@ import com.diddlebits.gpslib4j.*;
  * huge amount of different trackpoint-Packet specifications.
  */
 public class TrackpointDataPacket301 extends GarminPacket implements
-        ITrackpoint {
+        ITrackpoint, IAltitude {
 
     protected int index = -1;
 
@@ -29,7 +29,7 @@ public class TrackpointDataPacket301 extends GarminPacket implements
     protected boolean new_trk;
 
     protected static FloatSpecification AltSpecification = new FloatSpecification(
-            -1e24, 1e24, 0.1);
+            -1e24, 1e24, 0.1, true);
 
     /**
      * Throws a PacketNotRecognizedException if the Trackpoint-dataformat is not
@@ -39,11 +39,8 @@ public class TrackpointDataPacket301 extends GarminPacket implements
      * @throws PacketNotRecognizedException
      */
 
-    public TrackpointDataPacket301(GarminRawPacket p)
-            throws PacketNotRecognizedException, InvalidFieldValue {
+    public TrackpointDataPacket301() {
         super();
-
-        initFromRawPacket(p);
     }
 
     public int getIndex() {

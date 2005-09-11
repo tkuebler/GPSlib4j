@@ -5,6 +5,10 @@ import com.diddlebits.gpslib4j.*;
 public class PositionDataPacket700 extends GarminPacket implements IPosition {
     private Position position;
 
+    public PositionDataPacket700() {
+        super();
+    }
+
     /**
      * Treats the packet p as a packet containing position-data. Throws
      * PacketNotRecognizedException if p is not a position-data-packet. Throws
@@ -13,15 +17,14 @@ public class PositionDataPacket700 extends GarminPacket implements IPosition {
      * @throws PacketNotRecognizedException
      * @throws InvalidFieldValue
      */
-    public PositionDataPacket700(GarminRawPacket p)
+    public void initFromRawPacket(GarminRawPacket p)
             throws PacketNotRecognizedException, InvalidFieldValue {
-        super();
         if (p.getID() != GarminRawPacket.Pid_Position_Data) {
             throw (new PacketNotRecognizedException(
                     GarminRawPacket.Pid_Position_Data, p.getID()));
         }
 
-        initFromRawPacket(p);
+        super.initFromRawPacket(p);
     }
 
     /**

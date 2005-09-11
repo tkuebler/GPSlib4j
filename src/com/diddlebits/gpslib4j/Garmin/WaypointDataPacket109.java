@@ -9,7 +9,8 @@ import com.diddlebits.gpslib4j.*;
  * huge amount of different Waypoint-Packet specifications. Only the one
  * labelled D108 is implemented so far.
  */
-public class WaypointDataPacket109 extends GarminPacket implements IWaypoint {
+public class WaypointDataPacket109 extends GarminPacket implements IWaypoint,
+        IAltitude {
     /** Class of waypoint. */
     protected short wpt_class;
 
@@ -69,7 +70,19 @@ public class WaypointDataPacket109 extends GarminPacket implements IWaypoint {
     private static GPSEnumDefinition ColorEnum;
 
     protected static FloatSpecification AltSpecification = new FloatSpecification(
-            -1e24, 1e24, 0.1);
+            -1e24, 1e24, 0.1, true);
+
+    protected static IntegerSpecification DummySpecification = new IntegerSpecification(
+            1, 1, false);
+
+    protected static IntegerSpecification Dummy2Specification = new IntegerSpecification(
+            0x70, 0x70, false);
+
+    protected static IntegerSpecification DisplayColorSpecification = new IntegerSpecification(
+            0, 0xEF, false);
+
+    protected static IntegerSpecification ETESpecification = new IntegerSpecification(
+            0, 0xFFFFFFFE, false);
 
     /**
      * Throws a PacketNotRecognizedException if the Waypoint-dataformat is not
@@ -78,20 +91,26 @@ public class WaypointDataPacket109 extends GarminPacket implements IWaypoint {
      * @throws InvalidFieldValue
      */
 
-    public WaypointDataPacket109(GarminRawPacket p)
-            throws PacketNotRecognizedException, InvalidFieldValue {
+    public WaypointDataPacket109() {
         super();
+    }
 
+    /**
+     * @throws PacketNotRecognizedException
+     * @throws InvalidFieldValue
+     */
+    public void initFromRawPacket(GarminRawPacket p)
+            throws PacketNotRecognizedException, InvalidFieldValue {
         if (p.getID() != GarminRawPacket.Pid_Wpt_Data) {
             throw (new PacketNotRecognizedException(
                     GarminRawPacket.Pid_Wpt_Data, p.getID()));
         }
 
-        initFromRawPacket(p);
+        super.initFromRawPacket(p);
     }
 
     protected void visit(GarminGPSDataVisitor visitor) throws InvalidFieldValue {
-        visitor.intField(UINT8, "dtyp", 1, 1, 1, 1);
+        visitor.intField(UINT8, "dtyp", 1, DummySpecification, 1);
         wpt_class = (short) visitor.enumField(UINT8, GPSFields.ClassField,
                 wpt_class, WaypointDataPacket108.GetWaypointClassEnum());
 
@@ -105,11 +124,11 @@ public class WaypointDataPacket109 extends GarminPacket implements IWaypoint {
         // internal fields (parsed, but not show to the user)
         short dspl_color = (short) visitor.intField(UINT8,
                 GPSFields.DisplayColorField, (color & 0x1F) | (display << 5),
-                0, 0xEF, 0xFF);
+                DisplayColorSpecification, 0xFF);
         display = (short) (dspl_color >> 5 & 0x3);
         color = (short) (dspl_color & 0x1F);
 
-        visitor.intField(UINT8, "attr", 0x70, 0x70, 0x70, 0x70);
+        visitor.intField(UINT8, "attr", 0x70, Dummy2Specification, 0x70);
         smbl = visitor.enumField(UINT16, GPSFields.SymbolField, smbl,
                 WaypointDataPacket108.GetSymbolEnum());
         subclass = visitor.stringField(ACHAR, GPSFields.SubClassField,
@@ -126,8 +145,8 @@ public class WaypointDataPacket109 extends GarminPacket implements IWaypoint {
                 GarminStringValidatorsFactory.CreateUnchecked(2, true));
         cc = visitor.stringField(ACHAR, GPSFields.CountryCodeField, cc,
                 GarminStringValidatorsFactory.CreateCountryCode(2, true));
-        ete = visitor.intField(UINT32, GPSFields.ETEField, ete, 0, 0xFFFFFFFE,
-                0xFFFFFFFF);
+        ete = visitor.intField(UINT32, GPSFields.ETEField, ete,
+                ETESpecification, 0xFFFFFFFF);
         ident = visitor.stringField(VCHAR, GPSFields.IdentField, ident,
                 GarminStringValidatorsFactory.CreateWaypointIdent(100, false));
         comment = visitor.stringField(VCHAR, GPSFields.CommentField, comment,
@@ -146,7 +165,7 @@ public class WaypointDataPacket109 extends GarminPacket implements IWaypoint {
 
     public static GPSEnumDefinition GetColorEnum() {
         if (ColorEnum == null) {
-            ColorEnum = new GPSEnumDefinition("Color");
+            ColorEnum = new GPSEnumDefinition("Color", false);
             ColorEnum.addValue("black", 0, Color.BLACK);
             ColorEnum.addValue("dark red", 1, new Color(128, 0, 0));
             ColorEnum.addValue("dark green", 2, new Color(0, 128, 0));
@@ -194,7 +213,7 @@ public class WaypointDataPacket109 extends GarminPacket implements IWaypoint {
         return address;
     }
 
-    public float getAlt() {
+    public float getAltitude() {
         return alt;
     }
 

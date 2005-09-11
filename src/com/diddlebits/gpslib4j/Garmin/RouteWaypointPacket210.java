@@ -16,19 +16,8 @@ public class RouteWaypointPacket210 extends GarminPacket implements
 
     private static GPSEnumDefinition ClassEnum;
 
-    /**
-     * Throws a PacketNotRecognizedException if the Trackpoint-dataformat is not
-     * implemented.
-     * 
-     * @throws InvalidFieldValue
-     * @throws PacketNotRecognizedException
-     */
-
-    public RouteWaypointPacket210(GarminRawPacket p)
-            throws PacketNotRecognizedException, InvalidFieldValue {
+    public RouteWaypointPacket210() {
         super();
-
-        initFromRawPacket(p);
     }
 
     protected void visit(GarminGPSDataVisitor visitor) throws InvalidFieldValue {
@@ -48,7 +37,7 @@ public class RouteWaypointPacket210 extends GarminPacket implements
 
     public static GPSEnumDefinition GetClassEnum() {
         if (ClassEnum == null) {
-            ClassEnum = new GPSEnumDefinition("Class");
+            ClassEnum = new GPSEnumDefinition("Class", false);
             ClassEnum.addValue("line", 0, null);
             ClassEnum.addValue("link", 1, null);
             ClassEnum.addValue("net", 2, null);

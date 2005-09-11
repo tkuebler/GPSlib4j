@@ -2,6 +2,7 @@ package com.diddlebits.gpslib4j.Garmin;
 
 import com.diddlebits.gpslib4j.GPSFields;
 import com.diddlebits.gpslib4j.IRouteHeader;
+import com.diddlebits.gpslib4j.IntegerSpecification;
 import com.diddlebits.gpslib4j.InvalidFieldValue;
 
 /**
@@ -13,24 +14,16 @@ public class RouteHeaderPacket201 extends GarminPacket implements IRouteHeader {
 
     protected String cmnt;
 
-    /**
-     * Throws a PacketNotRecognizedException if the Trackpoint-dataformat is not
-     * implemented.
-     * 
-     * @throws InvalidFieldValue
-     * @throws PacketNotRecognizedException
-     */
+    protected static IntegerSpecification NumberSpecification = new IntegerSpecification(
+            0, 0xFF, false);
 
-    public RouteHeaderPacket201(GarminRawPacket p)
-            throws PacketNotRecognizedException, InvalidFieldValue {
+    public RouteHeaderPacket201() {
         super();
-
-        initFromRawPacket(p);
     }
 
     protected void visit(GarminGPSDataVisitor visitor) throws InvalidFieldValue {
         routeNumber = (short) visitor.intField(UINT8, GPSFields.IndexField,
-                routeNumber, 0, 0xFF, 0x100);
+                routeNumber, NumberSpecification, 0x100);
         cmnt = visitor.stringField(ACHAR, GPSFields.CommentField, cmnt,
                 GarminStringValidatorsFactory.CreateComment(20, true));
     }

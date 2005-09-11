@@ -13,6 +13,10 @@ import com.diddlebits.gpslib4j.InvalidFieldValue;
 public class TimeDataPacket600 extends GarminPacket implements ITimeDate {
     protected Date date;
 
+    public TimeDataPacket600() {
+        super();
+    }
+
     /**
      * Treats the packet p as a packet containing Time-data. Throws
      * PacketNotRecognizedException if p is not a Time-packet. Throws
@@ -20,23 +24,20 @@ public class TimeDataPacket600 extends GarminPacket implements ITimeDate {
      * 
      * @throws InvalidFieldValue
      * @throws PacketNotRecognizedException
-     * @throws InvalidPacketException
      */
-    public TimeDataPacket600(GarminRawPacket p)
-            throws PacketNotRecognizedException, InvalidFieldValue,
-            InvalidPacketException {
-        super();
-
+    public void initFromRawPacket(GarminRawPacket p)
+            throws PacketNotRecognizedException, InvalidFieldValue {
         if (p.getID() != GarminRawPacket.Pid_Date_Time_Data) {
             throw (new PacketNotRecognizedException(
                     GarminRawPacket.Pid_Date_Time_Data, p.getID()));
         }
 
         if (p.getDataLength() != 8) {
-            throw (new InvalidPacketException(p.packet, 2));
+            throw (new InvalidFieldValue("length", String.valueOf(p
+                    .getDataLength()), "Must be equal to 8"));
         }
 
-        initFromRawPacket(p);
+        super.initFromRawPacket(p);
     }
 
     protected void visit(GarminGPSDataVisitor visitor) throws InvalidFieldValue {

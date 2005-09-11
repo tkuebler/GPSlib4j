@@ -24,7 +24,10 @@ public class WaypointDataPacket103 extends GarminPacket implements IWaypoint {
 
     private static GPSEnumDefinition DisplayEnum;
 
-    private static GPSEnumDefinition SymbolEnum;
+    private static IconEnumDefinition SymbolEnum;
+
+    protected static IntegerSpecification DummySpecification = new IntegerSpecification(
+            0, 0, false);
 
     /**
      * Throws a PacketNotRecognizedException if the Waypoint-dataformat is not
@@ -32,16 +35,23 @@ public class WaypointDataPacket103 extends GarminPacket implements IWaypoint {
      * 
      * @throws InvalidFieldValue
      */
-    public WaypointDataPacket103(GarminRawPacket p)
-            throws PacketNotRecognizedException, InvalidFieldValue {
+    public WaypointDataPacket103() {
         super();
+    }
 
+    /**
+     * @param p
+     * @throws PacketNotRecognizedException
+     * @throws InvalidFieldValue
+     */
+    public void initFromRawPacket(GarminRawPacket p)
+            throws PacketNotRecognizedException, InvalidFieldValue {
         if (p.getID() != GarminRawPacket.Pid_Wpt_Data) {
             throw (new PacketNotRecognizedException(
                     GarminRawPacket.Pid_Wpt_Data, p.getID()));
         }
 
-        initFromRawPacket(p);
+        super.initFromRawPacket(p);
     }
 
     /**
@@ -74,7 +84,8 @@ public class WaypointDataPacket103 extends GarminPacket implements IWaypoint {
         ident = visitor.stringField(ACHAR, GPSFields.IdentField, ident,
                 GarminStringValidatorsFactory.CreateWaypointIdent(6, false));
         position = visitor.positionField(GPSFields.PositionField, position);
-        visitor.intField(UINT32, GPSFields.UnusedField, 0, 0, 0, 0);
+        visitor.intField(UINT32, GPSFields.UnusedField, 0, DummySpecification,
+                0);
         comment = visitor.stringField(ACHAR, GPSFields.CommentField, comment,
                 GarminStringValidatorsFactory.CreateComment(40, true));
         smbl = visitor.enumField(UINT8, GPSFields.SymbolField, smbl,
@@ -85,30 +96,30 @@ public class WaypointDataPacket103 extends GarminPacket implements IWaypoint {
 
     public static GPSEnumDefinition GetSymbolEnum() {
         if (SymbolEnum == null) {
-            SymbolEnum = new GPSEnumDefinition("Symbol");
-            SymbolEnum.addValue("dot", 0, null);
-            SymbolEnum.addValue("house", 1, null);
-            SymbolEnum.addValue("gaz", 2, null);
-            SymbolEnum.addValue("car", 3, null);
-            SymbolEnum.addValue("fish", 4, null);
-            SymbolEnum.addValue("boat", 5, null);
-            SymbolEnum.addValue("anchor", 6, null);
-            SymbolEnum.addValue("wreck", 7, null);
-            SymbolEnum.addValue("exit", 8, null);
-            SymbolEnum.addValue("skull", 9, null);
-            SymbolEnum.addValue("flag", 10, null);
-            SymbolEnum.addValue("camp", 11, null);
-            SymbolEnum.addValue("circle X", 12, null);
-            SymbolEnum.addValue("deer", 13, null);
-            SymbolEnum.addValue("1st aid", 14, null);
-            SymbolEnum.addValue("back track", 15, null);
+            SymbolEnum = new IconEnumDefinition("Symbol", false, "icon/icon");
+            SymbolEnum.addValue("waypoint dot", 0);
+            SymbolEnum.addValue("white house", 1);
+            SymbolEnum.addValue("white fuel", 2);
+            SymbolEnum.addValue("car", 3);
+            SymbolEnum.addValue("white fish", 4);
+            SymbolEnum.addValue("boat ramp", 5);
+            SymbolEnum.addValue("white anchor", 6);
+            SymbolEnum.addValue("white wreck", 7);
+            SymbolEnum.addValue("user exit", 8);
+            SymbolEnum.addValue("white skull and crossbones", 9);
+            SymbolEnum.addValue("flag", 10);
+            SymbolEnum.addValue("campground", 11);
+            SymbolEnum.addValue("circle with X in the center", 12);
+            SymbolEnum.addValue("deer", 13);
+            SymbolEnum.addValue("first aid", 14);
+            SymbolEnum.addValue("tracBack (feet)", 15);
         }
         return SymbolEnum;
     }
 
     public static GPSEnumDefinition GetDisplayEnum() {
         if (DisplayEnum == null) {
-            DisplayEnum = new GPSEnumDefinition("Display");
+            DisplayEnum = new GPSEnumDefinition("Display", false);
             DisplayEnum.addValue("name", 0, null);
             DisplayEnum.addValue("none", 1, null);
             DisplayEnum.addValue("comment", 2, null);

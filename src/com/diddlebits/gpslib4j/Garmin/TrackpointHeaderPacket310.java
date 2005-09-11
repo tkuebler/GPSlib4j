@@ -25,11 +25,8 @@ public class TrackpointHeaderPacket310 extends GarminPacket implements
      * @throws InvalidFieldValue
      * @throws PacketNotRecognizedException
      */
-    public TrackpointHeaderPacket310(GarminRawPacket p)
-            throws PacketNotRecognizedException, InvalidFieldValue {
+    public TrackpointHeaderPacket310() {
         super();
-
-        initFromRawPacket(p);
     }
 
     protected void visit(GarminGPSDataVisitor visitor) throws InvalidFieldValue {
@@ -42,7 +39,7 @@ public class TrackpointHeaderPacket310 extends GarminPacket implements
 
     private static GPSEnumDefinition GetColorEnum() {
         if (ColorEnum == null) {
-            ColorEnum = new GPSEnumDefinition("Color");
+            ColorEnum = new GPSEnumDefinition("Color", false);
             ColorEnum.addValue("black", 0, Color.BLACK);
             ColorEnum.addValue("dark red", 1, new Color(128, 0, 0));
             ColorEnum.addValue("dark green", 2, new Color(0, 128, 0));

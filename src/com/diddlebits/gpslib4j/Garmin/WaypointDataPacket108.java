@@ -2,14 +2,23 @@ package com.diddlebits.gpslib4j.Garmin;
 
 import java.awt.Color;
 
-import com.diddlebits.gpslib4j.*;
+import com.diddlebits.gpslib4j.FloatSpecification;
+import com.diddlebits.gpslib4j.GPSEnumDefinition;
+import com.diddlebits.gpslib4j.GPSFields;
+import com.diddlebits.gpslib4j.IAltitude;
+import com.diddlebits.gpslib4j.IWaypoint;
+import com.diddlebits.gpslib4j.IconEnumDefinition;
+import com.diddlebits.gpslib4j.IntegerSpecification;
+import com.diddlebits.gpslib4j.InvalidFieldValue;
+import com.diddlebits.gpslib4j.Position;
 
 /**
  * This class encapsulates a Waypoint-packet. The Garmin-protocol contains a
  * huge amount of different Waypoint-Packet specifications. Only the one
  * labelled D108 is implemented so far.
  */
-public class WaypointDataPacket108 extends GarminPacket implements IWaypoint {
+public class WaypointDataPacket108 extends GarminPacket implements IWaypoint,
+        IAltitude {
     /** Class of waypoint. */
     protected short wpt_class;
 
@@ -70,10 +79,17 @@ public class WaypointDataPacket108 extends GarminPacket implements IWaypoint {
 
     private static GPSEnumDefinition ColorEnum;
 
-    private static GPSEnumDefinition SymbolEnum;
+    private static IconEnumDefinition SymbolEnum;
 
     protected static FloatSpecification AltSpecification = new FloatSpecification(
-            -1e24, 1e24, 0.1);
+            -1e24, 1e24, 0.1, true);
+
+    protected static IntegerSpecification DummySpecification = new IntegerSpecification(
+            0x60, 0x60, false);
+
+    public WaypointDataPacket108() {
+        super();
+    }
 
     /**
      * Throws a PacketNotRecognizedException if the Waypoint-dataformat is not
@@ -81,17 +97,14 @@ public class WaypointDataPacket108 extends GarminPacket implements IWaypoint {
      * 
      * @throws InvalidFieldValue
      */
-
-    public WaypointDataPacket108(GarminRawPacket p)
+    public void initFromRawPacket(GarminRawPacket p)
             throws PacketNotRecognizedException, InvalidFieldValue {
-        super();
-
         if (p.getID() != GarminRawPacket.Pid_Wpt_Data) {
             throw (new PacketNotRecognizedException(
                     GarminRawPacket.Pid_Wpt_Data, p.getID()));
         }
 
-        initFromRawPacket(p);
+        super.initFromRawPacket(p);
     }
 
     protected void visit(GarminGPSDataVisitor visitor) throws InvalidFieldValue {
@@ -101,7 +114,8 @@ public class WaypointDataPacket108 extends GarminPacket implements IWaypoint {
                 GetColorEnum());
         dspl = (short) visitor.enumField(UINT8, GPSFields.DisplayField, dspl,
                 WaypointDataPacket103.GetDisplayEnum());
-        visitor.intField(UINT8, GPSFields.AttrField, 0x60, 0x60, 0x60, 0x60);
+        visitor.intField(UINT8, GPSFields.AttrField, 0x60, DummySpecification,
+                0x60);
         smbl = visitor.enumField(UINT16, GPSFields.SymbolField, smbl,
                 GetSymbolEnum());
         subclass = visitor.stringField(ACHAR, GPSFields.SubClassField,
@@ -140,7 +154,7 @@ public class WaypointDataPacket108 extends GarminPacket implements IWaypoint {
 
     public static GPSEnumDefinition GetWaypointClassEnum() {
         if (WaypointClassEnum == null) {
-            WaypointClassEnum = new GPSEnumDefinition("WaypointClass");
+            WaypointClassEnum = new GPSEnumDefinition("WaypointClass", false);
             WaypointClassEnum.addValue("user", 0x00, null);
             WaypointClassEnum.addValue("aviation airport", 0x40, null);
             WaypointClassEnum.addValue("aviation intersection", 0x41, null);
@@ -161,7 +175,7 @@ public class WaypointDataPacket108 extends GarminPacket implements IWaypoint {
 
     public static GPSEnumDefinition GetColorEnum() {
         if (ColorEnum == null) {
-            ColorEnum = new GPSEnumDefinition("Color");
+            ColorEnum = new GPSEnumDefinition("Color", false);
             ColorEnum.addValue("black", 0, Color.BLACK);
             ColorEnum.addValue("dark red", 1, new Color(128, 0, 0));
             ColorEnum.addValue("dark green", 2, new Color(0, 128, 0));
@@ -183,260 +197,260 @@ public class WaypointDataPacket108 extends GarminPacket implements IWaypoint {
         return ColorEnum;
     }
 
-    public static GPSEnumDefinition GetSymbolEnum() {
+    public static IconEnumDefinition GetSymbolEnum() {
         if (SymbolEnum == null) {
-            SymbolEnum = new GPSEnumDefinition("Symbol");
-            SymbolEnum.addValue("white anchor symbol", 0, null);
-            SymbolEnum.addValue("white bell symbol", 1, null);
-            SymbolEnum.addValue("green diamond symbol", 2, null);
-            SymbolEnum.addValue("red diamond symbol", 3, null);
-            SymbolEnum.addValue("diver down flag 1", 4, null);
-            SymbolEnum.addValue("diver down flag 2", 5, null);
-            SymbolEnum.addValue("white dollar symbol", 6, null);
-            SymbolEnum.addValue("white fish symbol", 7, null);
-            SymbolEnum.addValue("white fuel symbol", 8, null);
-            SymbolEnum.addValue("white horn symbol", 9, null);
-            SymbolEnum.addValue("white house symbol", 10, null);
-            SymbolEnum.addValue("white knife & fork symbol", 11, null);
-            SymbolEnum.addValue("white light symbol", 12, null);
-            SymbolEnum.addValue("white mug symbol", 13, null);
-            SymbolEnum.addValue("white skull and crossbones symbol", 14, null);
-            SymbolEnum.addValue("green square symbol", 15, null);
-            SymbolEnum.addValue("red square symbol", 16, null);
-            SymbolEnum.addValue("white buoy waypoint symbol", 17, null);
-            SymbolEnum.addValue("waypoint dot", 18, null);
-            SymbolEnum.addValue("white wreck symbol", 19, null);
-            SymbolEnum.addValue("null symbol (transparent)", 20, null);
-            SymbolEnum.addValue("man overboard symbol", 21, null);
-            SymbolEnum.addValue("amber map buoy symbol", 22, null);
-            SymbolEnum.addValue("black map buoy symbol", 23, null);
-            SymbolEnum.addValue("blue map buoy symbol", 24, null);
-            SymbolEnum.addValue("green map buoy symbol", 25, null);
-            SymbolEnum.addValue("green/red map buoy symbol", 26, null);
-            SymbolEnum.addValue("green/white map buoy symbol", 27, null);
-            SymbolEnum.addValue("orange map buoy symbol", 28, null);
-            SymbolEnum.addValue("red map buoy symbol", 29, null);
-            SymbolEnum.addValue("red/green map buoy symbol", 30, null);
-            SymbolEnum.addValue("red/white map buoy symbol", 31, null);
-            SymbolEnum.addValue("violet map buoy symbol", 32, null);
-            SymbolEnum.addValue("white map buoy symbol", 33, null);
-            SymbolEnum.addValue("white/green map buoy symbol", 34, null);
-            SymbolEnum.addValue("white/red map buoy symbol", 35, null);
-            SymbolEnum.addValue("white dot symbol", 36, null);
-            SymbolEnum.addValue("radio beacon symbol", 37, null);
-            SymbolEnum.addValue("boat ramp symbol", 150, null);
-            SymbolEnum.addValue("campground symbol", 151, null);
-            SymbolEnum.addValue("restrooms symbol", 152, null);
-            SymbolEnum.addValue("shower symbol", 153, null);
-            SymbolEnum.addValue("drinking water symbol", 154, null);
-            SymbolEnum.addValue("telephone symbol", 155, null);
-            SymbolEnum.addValue("first aid symbol", 156, null);
-            SymbolEnum.addValue("information symbol", 157, null);
-            SymbolEnum.addValue("parking symbol", 158, null);
-            SymbolEnum.addValue("park symbol", 159, null);
-            SymbolEnum.addValue("picnic symbol", 160, null);
-            SymbolEnum.addValue("scenic area symbol", 161, null);
-            SymbolEnum.addValue("skiing symbol", 162, null);
-            SymbolEnum.addValue("swimming symbol", 163, null);
-            SymbolEnum.addValue("dam symbol", 164, null);
-            SymbolEnum.addValue("controlled area symbol", 165, null);
-            SymbolEnum.addValue("danger symbol", 166, null);
-            SymbolEnum.addValue("restricted area symbol", 167, null);
-            SymbolEnum.addValue("null symbol", 168, null);
-            SymbolEnum.addValue("ball symbol", 169, null);
-            SymbolEnum.addValue("car symbol", 170, null);
-            SymbolEnum.addValue("deer symbol", 171, null);
-            SymbolEnum.addValue("shopping cart symbol", 172, null);
-            SymbolEnum.addValue("lodging symbol", 173, null);
-            SymbolEnum.addValue("mine symbol", 174, null);
-            SymbolEnum.addValue("trail head symbol", 175, null);
-            SymbolEnum.addValue("truck stop symbol", 176, null);
-            SymbolEnum.addValue("user exit symbol", 177, null);
-            SymbolEnum.addValue("flag symbol", 178, null);
-            SymbolEnum.addValue("circle with x in the center", 179, null);
-            SymbolEnum.addValue("open 24 hours symbol", 180, null);
-            SymbolEnum.addValue("U Fishing Hot Spots? Facility", 181, null);
-            SymbolEnum.addValue("Bottom Conditions", 182, null);
-            SymbolEnum.addValue("Tide/Current Prediction Station", 183, null);
-            SymbolEnum.addValue("U anchor prohibited symbol", 184, null);
-            SymbolEnum.addValue("U beacon symbol", 185, null);
-            SymbolEnum.addValue("U coast guard symbol", 186, null);
-            SymbolEnum.addValue("U reef symbol", 187, null);
-            SymbolEnum.addValue("U weedbed symbol", 188, null);
-            SymbolEnum.addValue("U dropoff symbol", 189, null);
-            SymbolEnum.addValue("U dock symbol", 190, null);
-            SymbolEnum.addValue("U marina symbol", 191, null);
-            SymbolEnum.addValue("U bait and tackle symbol", 192, null);
-            SymbolEnum.addValue("U stump symbol", 193, null);
-            SymbolEnum.addValue("interstate hwy symbol", 8192, null);
-            SymbolEnum.addValue("us hwy symbol", 8193, null);
-            SymbolEnum.addValue("state hwy symbol", 8194, null);
-            SymbolEnum.addValue("mile marker symbol", 8195, null);
-            SymbolEnum.addValue("TracBack (feet) symbol", 8196, null);
-            SymbolEnum.addValue("golf symbol", 8197, null);
-            SymbolEnum.addValue("small city symbol", 8198, null);
-            SymbolEnum.addValue("medium city symbol", 8199, null);
-            SymbolEnum.addValue("large city symbol", 8200, null);
-            SymbolEnum.addValue("intl freeway hwy symbol", 8201, null);
-            SymbolEnum.addValue("intl national hwy symbol", 8202, null);
-            SymbolEnum.addValue("capitol city symbol (star)", 8203, null);
-            SymbolEnum.addValue("amusement park symbol", 8204, null);
-            SymbolEnum.addValue("bowling symbol", 8205, null);
-            SymbolEnum.addValue("car rental symbol", 8206, null);
-            SymbolEnum.addValue("car repair symbol", 8207, null);
-            SymbolEnum.addValue("fast food symbol", 8208, null);
-            SymbolEnum.addValue("fitness symbol", 8209, null);
-            SymbolEnum.addValue("movie symbol", 8210, null);
-            SymbolEnum.addValue("museum symbol", 8211, null);
-            SymbolEnum.addValue("pharmacy symbol", 8212, null);
-            SymbolEnum.addValue("pizza symbol", 8213, null);
-            SymbolEnum.addValue("post office symbol", 8214, null);
-            SymbolEnum.addValue("RV park symbol", 8215, null);
-            SymbolEnum.addValue("school symbol", 8216, null);
-            SymbolEnum.addValue("stadium symbol", 8217, null);
-            SymbolEnum.addValue("dept. store symbol", 8218, null);
-            SymbolEnum.addValue("zoo symbol", 8219, null);
-            SymbolEnum.addValue("convenience store symbol", 8220, null);
-            SymbolEnum.addValue("live theater symbol", 8221, null);
-            SymbolEnum.addValue("ramp intersection symbol", 8222, null);
-            SymbolEnum.addValue("street intersection symbol", 8223, null);
-            SymbolEnum.addValue("inspection/weigh station symbol", 8226, null);
-            SymbolEnum.addValue("toll booth symbol", 8227, null);
-            SymbolEnum.addValue("elevation point symbol", 8228, null);
-            SymbolEnum.addValue("exit without services symbol", 8229, null);
-            SymbolEnum.addValue("Geographic place name, man-made", 8230, null);
-            SymbolEnum.addValue("Geographic place name, water", 8231, null);
-            SymbolEnum.addValue("Geographic place name, land", 8232, null);
-            SymbolEnum.addValue("bridge symbol", 8233, null);
-            SymbolEnum.addValue("building symbol", 8234, null);
-            SymbolEnum.addValue("cemetery symbol", 8235, null);
-            SymbolEnum.addValue("church symbol", 8236, null);
-            SymbolEnum.addValue("civil location symbol", 8237, null);
-            SymbolEnum.addValue("crossing symbol", 8238, null);
-            SymbolEnum.addValue("historical town symbol", 8239, null);
-            SymbolEnum.addValue("levee symbol", 8240, null);
-            SymbolEnum.addValue("military location symbol", 8241, null);
-            SymbolEnum.addValue("oil field symbol", 8242, null);
-            SymbolEnum.addValue("tunnel symbol", 8243, null);
-            SymbolEnum.addValue("beach symbol", 8244, null);
-            SymbolEnum.addValue("forest symbol", 8245, null);
-            SymbolEnum.addValue("summit symbol", 8246, null);
-            SymbolEnum.addValue("large ramp intersection symbol", 8247, null);
-            SymbolEnum.addValue("large exit without services smbl", 8248, null);
-            SymbolEnum.addValue("police/official badge symbol", 8249, null);
-            SymbolEnum.addValue("gambling/casino symbol", 8250, null);
-            SymbolEnum.addValue("snow skiing symbol", 8251, null);
-            SymbolEnum.addValue("ice skating symbol", 8252, null);
-            SymbolEnum.addValue("tow truck (wrecker) symbol", 8253, null);
-            SymbolEnum.addValue("border crossing (port of entry)", 8254, null);
-            SymbolEnum.addValue("geocache location", 8255, null);
-            SymbolEnum.addValue("found geocache", 8256, null);
-            SymbolEnum.addValue("Rino contact symbol, 'smiley'", 8257, null);
-            SymbolEnum.addValue("Rino contact symbol, 'ball cap'", 8258, null);
-            SymbolEnum.addValue("Rino contact symbol, 'big ear'", 8259, null);
-            SymbolEnum.addValue("Rino contact symbol, 'spike'", 8260, null);
-            SymbolEnum.addValue("Rino contact symbol, 'goatee'", 8261, null);
-            SymbolEnum.addValue("Rino contact symbol, 'afro'", 8262, null);
-            SymbolEnum.addValue("Rino contact symbol, 'dreads'", 8263, null);
-            SymbolEnum.addValue("Rino contact symbol, 'female 1'", 8264, null);
-            SymbolEnum.addValue("Rino contact symbol, 'female 2'", 8265, null);
-            SymbolEnum.addValue("Rino contact symbol, 'female 3'", 8266, null);
-            SymbolEnum.addValue("Rino contact symbol, 'ranger'", 8267, null);
-            SymbolEnum.addValue("Rino contact symbol, 'kung fu'", 8268, null);
-            SymbolEnum.addValue("Rino contact symbol, 'sumo'", 8269, null);
-            SymbolEnum.addValue("Rino contact symbol, 'pirate'", 8270, null);
-            SymbolEnum.addValue("Rino contact symbol, 'biker'", 8271, null);
-            SymbolEnum.addValue("Rino contact symbol, 'alien'", 8272, null);
-            SymbolEnum.addValue("Rino contact symbol, 'bug'", 8273, null);
-            SymbolEnum.addValue("Rino contact symbol, 'cat'", 8274, null);
-            SymbolEnum.addValue("Rino contact symbol, 'dog'", 8275, null);
-            SymbolEnum.addValue("Rino contact symbol, 'pig'", 8276, null);
-            SymbolEnum.addValue("water hydrant symbol", 8282, null);
-            SymbolEnum.addValue("blue flag symbol", 8284, null);
-            SymbolEnum.addValue("green flag symbol", 8285, null);
-            SymbolEnum.addValue("red flag symbol", 8286, null);
-            SymbolEnum.addValue("blue pin symbol", 8287, null);
-            SymbolEnum.addValue("green pin symbol", 8288, null);
-            SymbolEnum.addValue("red pin symbol", 8289, null);
-            SymbolEnum.addValue("blue block symbol", 8290, null);
-            SymbolEnum.addValue("green block symbol", 8291, null);
-            SymbolEnum.addValue("red block symbol", 8292, null);
-            SymbolEnum.addValue("bike trail symbol", 8293, null);
-            SymbolEnum.addValue("red circle symbol", 8294, null);
-            SymbolEnum.addValue("green circle symbol", 8295, null);
-            SymbolEnum.addValue("blue circle symbol", 8296, null);
-            SymbolEnum.addValue("blue diamond symbol", 8299, null);
-            SymbolEnum.addValue("red oval symbol", 8300, null);
-            SymbolEnum.addValue("green oval symbol", 8301, null);
-            SymbolEnum.addValue("blue oval symbol", 8302, null);
-            SymbolEnum.addValue("red rectangle symbol", 8303, null);
-            SymbolEnum.addValue("green rectangle symbol", 8304, null);
-            SymbolEnum.addValue("blue rectangle symbol", 8305, null);
-            SymbolEnum.addValue("blue square symbol", 8308, null);
-            SymbolEnum.addValue("red letter 'A' symbol", 8309, null);
-            SymbolEnum.addValue("red letter 'B' symbol", 8310, null);
-            SymbolEnum.addValue("red letter 'C' symbol", 8311, null);
-            SymbolEnum.addValue("red letter 'D' symbol", 8312, null);
-            SymbolEnum.addValue("green letter 'A' symbol", 8313, null);
-            SymbolEnum.addValue("green letter 'C' symbol", 8314, null);
-            SymbolEnum.addValue("green letter 'B' symbol", 8315, null);
-            SymbolEnum.addValue("green letter 'D' symbol", 8316, null);
-            SymbolEnum.addValue("blue letter 'A' symbol", 8317, null);
-            SymbolEnum.addValue("blue letter 'B' symbol", 8318, null);
-            SymbolEnum.addValue("blue letter 'C' symbol", 8319, null);
-            SymbolEnum.addValue("blue letter 'D' symbol", 8320, null);
-            SymbolEnum.addValue("red number '0' symbol", 8321, null);
-            SymbolEnum.addValue("red number '1' symbol", 8322, null);
-            SymbolEnum.addValue("red number '2' symbol", 8323, null);
-            SymbolEnum.addValue("red number '3' symbol", 8324, null);
-            SymbolEnum.addValue("red number '4' symbol", 8325, null);
-            SymbolEnum.addValue("red number '5' symbol", 8326, null);
-            SymbolEnum.addValue("red number '6' symbol", 8327, null);
-            SymbolEnum.addValue("red number '7' symbol", 8328, null);
-            SymbolEnum.addValue("red number '8' symbol", 8329, null);
-            SymbolEnum.addValue("red number '9' symbol", 8330, null);
-            SymbolEnum.addValue("green number '0' symbol", 8331, null);
-            SymbolEnum.addValue("green number '1' symbol", 8332, null);
-            SymbolEnum.addValue("green number '2' symbol", 8333, null);
-            SymbolEnum.addValue("green number '3' symbol", 8334, null);
-            SymbolEnum.addValue("green number '4' symbol", 8335, null);
-            SymbolEnum.addValue("green number '5' symbol", 8336, null);
-            SymbolEnum.addValue("green number '6' symbol", 8337, null);
-            SymbolEnum.addValue("green number '7' symbol", 8338, null);
-            SymbolEnum.addValue("green number '8' symbol", 8339, null);
-            SymbolEnum.addValue("green number '9' symbol", 8340, null);
-            SymbolEnum.addValue("blue number '0' symbol", 8341, null);
-            SymbolEnum.addValue("blue number '1' symbol", 8342, null);
-            SymbolEnum.addValue("blue number '2' symbol", 8343, null);
-            SymbolEnum.addValue("blue number '3' symbol", 8344, null);
-            SymbolEnum.addValue("blue number '4' symbol", 8345, null);
-            SymbolEnum.addValue("blue number '5' symbol", 8346, null);
-            SymbolEnum.addValue("blue number '6' symbol", 8347, null);
-            SymbolEnum.addValue("blue number '7' symbol", 8348, null);
-            SymbolEnum.addValue("blue number '8' symbol", 8349, null);
-            SymbolEnum.addValue("blue number '9' symbol", 8350, null);
-            SymbolEnum.addValue("blue triangle symbol", 8351, null);
-            SymbolEnum.addValue("green triangle symbol", 8352, null);
-            SymbolEnum.addValue("red triangle symbol", 8353, null);
-            SymbolEnum.addValue("airport symbol", 16384, null);
-            SymbolEnum.addValue("intersection symbol", 16385, null);
-            SymbolEnum.addValue("non-directional beacon symbol", 16386, null);
-            SymbolEnum.addValue("VHF omni-range symbol", 16387, null);
-            SymbolEnum.addValue("heliport symbol", 16388, null);
-            SymbolEnum.addValue("private field symbol", 16389, null);
-            SymbolEnum.addValue("soft field symbol", 16390, null);
-            SymbolEnum.addValue("tall tower symbol", 16391, null);
-            SymbolEnum.addValue("short tower symbol", 16392, null);
-            SymbolEnum.addValue("glider symbol", 16393, null);
-            SymbolEnum.addValue("ultralight symbol", 16394, null);
-            SymbolEnum.addValue("parachute symbol", 16395, null);
-            SymbolEnum.addValue("VOR/TACAN symbol", 16396, null);
-            SymbolEnum.addValue("VOR-DME symbol", 16397, null);
-            SymbolEnum.addValue("first approach fix", 16398, null);
-            SymbolEnum.addValue("localizer outer marker", 16399, null);
-            SymbolEnum.addValue("missed approach point", 16400, null);
-            SymbolEnum.addValue("TACAN symbol", 16401, null);
-            SymbolEnum.addValue("Seaplane Base", 16402, null);
+            SymbolEnum = new IconEnumDefinition("Symbol", false, "icons/icon");
+            SymbolEnum.addValue("white anchor", 0);
+            SymbolEnum.addValue("white bell", 1);
+            SymbolEnum.addValue("green diamond", 2);
+            SymbolEnum.addValue("red diamond", 3);
+            SymbolEnum.addValue("diver down flag 1", 4);
+            SymbolEnum.addValue("diver down flag 2", 5);
+            SymbolEnum.addValue("white dollar", 6);
+            SymbolEnum.addValue("white fish", 7);
+            SymbolEnum.addValue("white fuel", 8);
+            SymbolEnum.addValue("white horn", 9);
+            SymbolEnum.addValue("white house", 10);
+            SymbolEnum.addValue("white knife & fork", 11);
+            SymbolEnum.addValue("white light", 12);
+            SymbolEnum.addValue("white mug", 13);
+            SymbolEnum.addValue("white skull and crossbones", 14);
+            SymbolEnum.addValue("green square", 15);
+            SymbolEnum.addValue("red square", 16);
+            SymbolEnum.addValue("white buoy waypoint", 17);
+            SymbolEnum.addValue("waypoint dot", 18);
+            SymbolEnum.addValue("white wreck", 19);
+            SymbolEnum.addValue("null (transparent)", 20);
+            SymbolEnum.addValue("man overboard", 21);
+            SymbolEnum.addValue("amber map buoy", 22);
+            SymbolEnum.addValue("black map buoy", 23);
+            SymbolEnum.addValue("blue map buoy", 24);
+            SymbolEnum.addValue("green map buoy", 25);
+            SymbolEnum.addValue("green/red map buoy", 26);
+            SymbolEnum.addValue("green/white map buoy", 27);
+            SymbolEnum.addValue("orange map buoy", 28);
+            SymbolEnum.addValue("red map buoy", 29);
+            SymbolEnum.addValue("red/green map buoy", 30);
+            SymbolEnum.addValue("red/white map buoy", 31);
+            SymbolEnum.addValue("violet map buoy", 32);
+            SymbolEnum.addValue("white map buoy", 33);
+            SymbolEnum.addValue("white/green map buoy", 34);
+            SymbolEnum.addValue("white/red map buoy", 35);
+            SymbolEnum.addValue("white dot", 36);
+            SymbolEnum.addValue("radio beacon", 37);
+            SymbolEnum.addValue("boat ramp", 150);
+            SymbolEnum.addValue("campground", 151);
+            SymbolEnum.addValue("restrooms", 152);
+            SymbolEnum.addValue("shower", 153);
+            SymbolEnum.addValue("drinking water", 154);
+            SymbolEnum.addValue("telephone", 155);
+            SymbolEnum.addValue("first aid", 156);
+            SymbolEnum.addValue("information", 157);
+            SymbolEnum.addValue("parking", 158);
+            SymbolEnum.addValue("park", 159);
+            SymbolEnum.addValue("picnic", 160);
+            SymbolEnum.addValue("scenic area", 161);
+            SymbolEnum.addValue("skiing", 162);
+            SymbolEnum.addValue("swimming", 163);
+            SymbolEnum.addValue("dam", 164);
+            SymbolEnum.addValue("controlled area", 165);
+            SymbolEnum.addValue("danger", 166);
+            SymbolEnum.addValue("restricted area", 167);
+            SymbolEnum.addValue("null", 168);
+            SymbolEnum.addValue("ball", 169);
+            SymbolEnum.addValue("car", 170);
+            SymbolEnum.addValue("deer", 171);
+            SymbolEnum.addValue("shopping cart", 172);
+            SymbolEnum.addValue("lodging", 173);
+            SymbolEnum.addValue("mine", 174);
+            SymbolEnum.addValue("trail head", 175);
+            SymbolEnum.addValue("truck stop", 176);
+            SymbolEnum.addValue("user exit", 177);
+            SymbolEnum.addValue("flag", 178);
+            SymbolEnum.addValue("circle with x in the center", 179);
+            SymbolEnum.addValue("open 24 hours", 180);
+            SymbolEnum.addValue("U Fishing Hot Spots? Facility", 181);
+            SymbolEnum.addValue("Bottom Conditions", 182);
+            SymbolEnum.addValue("Tide/Current Prediction Station", 183);
+            SymbolEnum.addValue("U anchor prohibited", 184);
+            SymbolEnum.addValue("U beacon", 185);
+            SymbolEnum.addValue("U coast guard", 186);
+            SymbolEnum.addValue("U reef", 187);
+            SymbolEnum.addValue("U weedbed", 188);
+            SymbolEnum.addValue("U dropoff", 189);
+            SymbolEnum.addValue("U dock", 190);
+            SymbolEnum.addValue("U marina", 191);
+            SymbolEnum.addValue("U bait and tackle", 192);
+            SymbolEnum.addValue("U stump", 193);
+            SymbolEnum.addValue("interstate hwy", 8192);
+            SymbolEnum.addValue("us hwy", 8193);
+            SymbolEnum.addValue("state hwy", 8194);
+            SymbolEnum.addValue("mile marker", 8195);
+            SymbolEnum.addValue("tracBack (feet)", 8196);
+            SymbolEnum.addValue("golf", 8197);
+            SymbolEnum.addValue("small city", 8198);
+            SymbolEnum.addValue("medium city", 8199);
+            SymbolEnum.addValue("large city", 8200);
+            SymbolEnum.addValue("intl freeway hwy", 8201);
+            SymbolEnum.addValue("intl national hwy", 8202);
+            SymbolEnum.addValue("capitol city (star)", 8203);
+            SymbolEnum.addValue("amusement park", 8204);
+            SymbolEnum.addValue("bowling", 8205);
+            SymbolEnum.addValue("car rental", 8206);
+            SymbolEnum.addValue("car repair", 8207);
+            SymbolEnum.addValue("fast food", 8208);
+            SymbolEnum.addValue("fitness", 8209);
+            SymbolEnum.addValue("movie", 8210);
+            SymbolEnum.addValue("museum", 8211);
+            SymbolEnum.addValue("pharmacy", 8212);
+            SymbolEnum.addValue("pizza", 8213);
+            SymbolEnum.addValue("post office", 8214);
+            SymbolEnum.addValue("RV park", 8215);
+            SymbolEnum.addValue("school", 8216);
+            SymbolEnum.addValue("stadium", 8217);
+            SymbolEnum.addValue("dept. store", 8218);
+            SymbolEnum.addValue("zoo", 8219);
+            SymbolEnum.addValue("convenience store", 8220);
+            SymbolEnum.addValue("live theater", 8221);
+            SymbolEnum.addValue("ramp intersection", 8222);
+            SymbolEnum.addValue("street intersection", 8223);
+            SymbolEnum.addValue("inspection/weigh station", 8226);
+            SymbolEnum.addValue("toll booth", 8227);
+            SymbolEnum.addValue("elevation point", 8228);
+            SymbolEnum.addValue("exit without services", 8229);
+            SymbolEnum.addValue("Geographic place name, man-made", 8230);
+            SymbolEnum.addValue("Geographic place name, water", 8231);
+            SymbolEnum.addValue("Geographic place name, land", 8232);
+            SymbolEnum.addValue("bridge", 8233);
+            SymbolEnum.addValue("building", 8234);
+            SymbolEnum.addValue("cemetery", 8235);
+            SymbolEnum.addValue("church", 8236);
+            SymbolEnum.addValue("civil location", 8237);
+            SymbolEnum.addValue("crossing", 8238);
+            SymbolEnum.addValue("historical town", 8239);
+            SymbolEnum.addValue("levee", 8240);
+            SymbolEnum.addValue("military location", 8241);
+            SymbolEnum.addValue("oil field", 8242);
+            SymbolEnum.addValue("tunnel", 8243);
+            SymbolEnum.addValue("beach", 8244);
+            SymbolEnum.addValue("forest", 8245);
+            SymbolEnum.addValue("summit", 8246);
+            SymbolEnum.addValue("large ramp intersection", 8247);
+            SymbolEnum.addValue("large exit without services smbl", 8248);
+            SymbolEnum.addValue("police/official badge", 8249);
+            SymbolEnum.addValue("gambling/casino", 8250);
+            SymbolEnum.addValue("snow skiing", 8251);
+            SymbolEnum.addValue("ice skating", 8252);
+            SymbolEnum.addValue("tow truck (wrecker)", 8253);
+            SymbolEnum.addValue("border crossing (port of entry)", 8254);
+            SymbolEnum.addValue("geocache location", 8255);
+            SymbolEnum.addValue("found geocache", 8256);
+            SymbolEnum.addValue("Rino contact, 'smiley'", 8257);
+            SymbolEnum.addValue("Rino contact, 'ball cap'", 8258);
+            SymbolEnum.addValue("Rino contact, 'big ear'", 8259);
+            SymbolEnum.addValue("Rino contact, 'spike'", 8260);
+            SymbolEnum.addValue("Rino contact, 'goatee'", 8261);
+            SymbolEnum.addValue("Rino contact, 'afro'", 8262);
+            SymbolEnum.addValue("Rino contact, 'dreads'", 8263);
+            SymbolEnum.addValue("Rino contact, 'female 1'", 8264);
+            SymbolEnum.addValue("Rino contact, 'female 2'", 8265);
+            SymbolEnum.addValue("Rino contact, 'female 3'", 8266);
+            SymbolEnum.addValue("Rino contact, 'ranger'", 8267);
+            SymbolEnum.addValue("Rino contact, 'kung fu'", 8268);
+            SymbolEnum.addValue("Rino contact, 'sumo'", 8269);
+            SymbolEnum.addValue("Rino contact, 'pirate'", 8270);
+            SymbolEnum.addValue("Rino contact, 'biker'", 8271);
+            SymbolEnum.addValue("Rino contact, 'alien'", 8272);
+            SymbolEnum.addValue("Rino contact, 'bug'", 8273);
+            SymbolEnum.addValue("Rino contact, 'cat'", 8274);
+            SymbolEnum.addValue("Rino contact, 'dog'", 8275);
+            SymbolEnum.addValue("Rino contact, 'pig'", 8276);
+            SymbolEnum.addValue("water hydrant", 8282);
+            SymbolEnum.addValue("blue flag", 8284);
+            SymbolEnum.addValue("green flag", 8285);
+            SymbolEnum.addValue("red flag", 8286);
+            SymbolEnum.addValue("blue pin", 8287);
+            SymbolEnum.addValue("green pin", 8288);
+            SymbolEnum.addValue("red pin", 8289);
+            SymbolEnum.addValue("blue block", 8290);
+            SymbolEnum.addValue("green block", 8291);
+            SymbolEnum.addValue("red block", 8292);
+            SymbolEnum.addValue("bike trail", 8293);
+            SymbolEnum.addValue("red circle", 8294);
+            SymbolEnum.addValue("green circle", 8295);
+            SymbolEnum.addValue("blue circle", 8296);
+            SymbolEnum.addValue("blue diamond", 8299);
+            SymbolEnum.addValue("red oval", 8300);
+            SymbolEnum.addValue("green oval", 8301);
+            SymbolEnum.addValue("blue oval", 8302);
+            SymbolEnum.addValue("red rectangle", 8303);
+            SymbolEnum.addValue("green rectangle", 8304);
+            SymbolEnum.addValue("blue rectangle", 8305);
+            SymbolEnum.addValue("blue square", 8308);
+            SymbolEnum.addValue("red letter 'A'", 8309);
+            SymbolEnum.addValue("red letter 'B'", 8310);
+            SymbolEnum.addValue("red letter 'C'", 8311);
+            SymbolEnum.addValue("red letter 'D'", 8312);
+            SymbolEnum.addValue("green letter 'A'", 8313);
+            SymbolEnum.addValue("green letter 'C'", 8314);
+            SymbolEnum.addValue("green letter 'B'", 8315);
+            SymbolEnum.addValue("green letter 'D'", 8316);
+            SymbolEnum.addValue("blue letter 'A'", 8317);
+            SymbolEnum.addValue("blue letter 'B'", 8318);
+            SymbolEnum.addValue("blue letter 'C'", 8319);
+            SymbolEnum.addValue("blue letter 'D'", 8320);
+            SymbolEnum.addValue("red number '0'", 8321);
+            SymbolEnum.addValue("red number '1'", 8322);
+            SymbolEnum.addValue("red number '2'", 8323);
+            SymbolEnum.addValue("red number '3'", 8324);
+            SymbolEnum.addValue("red number '4'", 8325);
+            SymbolEnum.addValue("red number '5'", 8326);
+            SymbolEnum.addValue("red number '6'", 8327);
+            SymbolEnum.addValue("red number '7'", 8328);
+            SymbolEnum.addValue("red number '8'", 8329);
+            SymbolEnum.addValue("red number '9'", 8330);
+            SymbolEnum.addValue("green number '0'", 8331);
+            SymbolEnum.addValue("green number '1'", 8332);
+            SymbolEnum.addValue("green number '2'", 8333);
+            SymbolEnum.addValue("green number '3'", 8334);
+            SymbolEnum.addValue("green number '4'", 8335);
+            SymbolEnum.addValue("green number '5'", 8336);
+            SymbolEnum.addValue("green number '6'", 8337);
+            SymbolEnum.addValue("green number '7'", 8338);
+            SymbolEnum.addValue("green number '8'", 8339);
+            SymbolEnum.addValue("green number '9'", 8340);
+            SymbolEnum.addValue("blue number '0'", 8341);
+            SymbolEnum.addValue("blue number '1'", 8342);
+            SymbolEnum.addValue("blue number '2'", 8343);
+            SymbolEnum.addValue("blue number '3'", 8344);
+            SymbolEnum.addValue("blue number '4'", 8345);
+            SymbolEnum.addValue("blue number '5'", 8346);
+            SymbolEnum.addValue("blue number '6'", 8347);
+            SymbolEnum.addValue("blue number '7'", 8348);
+            SymbolEnum.addValue("blue number '8'", 8349);
+            SymbolEnum.addValue("blue number '9'", 8350);
+            SymbolEnum.addValue("blue triangle", 8351);
+            SymbolEnum.addValue("green triangle", 8352);
+            SymbolEnum.addValue("red triangle", 8353);
+            SymbolEnum.addValue("airport", 16384);
+            SymbolEnum.addValue("intersection", 16385);
+            SymbolEnum.addValue("non-directional beacon", 16386);
+            SymbolEnum.addValue("VHF omni-range", 16387);
+            SymbolEnum.addValue("heliport", 16388);
+            SymbolEnum.addValue("private field", 16389);
+            SymbolEnum.addValue("soft field", 16390);
+            SymbolEnum.addValue("tall tower", 16391);
+            SymbolEnum.addValue("short tower", 16392);
+            SymbolEnum.addValue("glider", 16393);
+            SymbolEnum.addValue("ultralight", 16394);
+            SymbolEnum.addValue("parachute", 16395);
+            SymbolEnum.addValue("VOR/TACAN", 16396);
+            SymbolEnum.addValue("VOR-DME", 16397);
+            SymbolEnum.addValue("first approach fix", 16398);
+            SymbolEnum.addValue("localizer outer marker", 16399);
+            SymbolEnum.addValue("missed approach point", 16400);
+            SymbolEnum.addValue("TACAN", 16401);
+            SymbolEnum.addValue("Seaplane Base", 16402);
         }
         return SymbolEnum;
     }
@@ -471,7 +485,7 @@ public class WaypointDataPacket108 extends GarminPacket implements IWaypoint {
         return WaypointClassEnum;
     }
 
-    public float getAlt() {
+    public float getAltitude() {
         return alt;
     }
 

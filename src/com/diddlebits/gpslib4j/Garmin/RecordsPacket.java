@@ -1,6 +1,7 @@
 package com.diddlebits.gpslib4j.Garmin;
 
 import com.diddlebits.gpslib4j.GPSFields;
+import com.diddlebits.gpslib4j.IntegerSpecification;
 import com.diddlebits.gpslib4j.InvalidFieldValue;
 
 /**
@@ -12,21 +13,26 @@ public class RecordsPacket extends GarminPacket {
     /** The number of records to come, that this packet announces. */
     protected int number;
 
-    public RecordsPacket(GarminRawPacket p)
-            throws PacketNotRecognizedException, InvalidFieldValue,
-            InvalidPacketException {
-        super();
+    protected static IntegerSpecification NumberSpecification = new IntegerSpecification(
+            0, 0xFFFF, false);
 
+    public RecordsPacket() {
+        super();
+    }
+
+    public void initFromRawPacket(GarminRawPacket p)
+            throws PacketNotRecognizedException, InvalidFieldValue {
         if (p.getID() != GarminRawPacket.Pid_Records) {
             throw (new PacketNotRecognizedException(
                     GarminRawPacket.Pid_Records, p.getID()));
         }
 
         if (p.getDataLength() != 2) {
-            throw (new InvalidPacketException(p.packet, 2));
+            throw (new InvalidFieldValue("length", String.valueOf(p
+                    .getDataLength()), "Must be equal to 2"));
         }
 
-        initFromRawPacket(p);
+        super.initFromRawPacket(p);
     }
 
     /** Returns the number of records that this packet announces. */
@@ -35,8 +41,8 @@ public class RecordsPacket extends GarminPacket {
     }
 
     protected void visit(GarminGPSDataVisitor visitor) throws InvalidFieldValue {
-        visitor.intField(UINT16, GPSFields.NumberField, number, 0, 0xFFFF,
-                0x10000);
+        visitor.intField(UINT16, GPSFields.NumberField, number,
+                NumberSpecification, 0x10000);
     }
 
     public String getPacketType() {

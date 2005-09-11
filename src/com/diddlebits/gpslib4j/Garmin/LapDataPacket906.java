@@ -35,7 +35,20 @@ public class LapDataPacket906 extends GarminPacket implements ILap {
     protected short unused;
 
     protected static FloatSpecification DistanceSpecification = new FloatSpecification(
-            0.0, 1e24, 0.1);
+            0.0, 1e24, 0.1, false);
+
+    protected static IntegerSpecification TotalTimeSpecification = new IntegerSpecification(
+            0, 0xFFFFFFFE, true);
+
+    protected static IntegerSpecification CaloriesSpecification = new IntegerSpecification(
+            0, 0xFFFF, false);
+
+    protected static IntegerSpecification IndexSpecification = new IntegerSpecification(
+            0, 255, false);
+
+    public LapDataPacket906() {
+        super();
+    }
 
     /**
      * Throws a PacketNotRecognizedException if the lap-dataformat is not
@@ -44,16 +57,14 @@ public class LapDataPacket906 extends GarminPacket implements ILap {
      * @throws PacketNotRecognizedException
      * @throws InvalidFieldValue
      */
-    public LapDataPacket906(GarminRawPacket p)
+    public void initFromRawPacket(GarminRawPacket p)
             throws PacketNotRecognizedException, InvalidFieldValue {
-        super();
-
         if (p.getID() != GarminRawPacket.Pid_Lap) {
             throw (new PacketNotRecognizedException(GarminRawPacket.Pid_Lap, p
                     .getID()));
         }
 
-        initFromRawPacket(p);
+        super.initFromRawPacket(p);
     }
 
     public Date getStartTime() {
@@ -88,18 +99,20 @@ public class LapDataPacket906 extends GarminPacket implements ILap {
         start_time = visitor.timeField(LONG_DATE, GPSFields.StartTimeField,
                 start_time);
         total_time = visitor.intField(UINT32, GPSFields.TotalTimeField,
-                total_time, 0, 0xFFFFFFFE, 0xFFFFFFFF);
+                total_time, TotalTimeSpecification, 0xFFFFFFFF);
         total_distance = (float) visitor.floatField(FLOAT32,
-                GPSFields.TotalDistanceField, total_distance, DistanceSpecification);
+                GPSFields.TotalDistanceField, total_distance,
+                DistanceSpecification);
         start_position = visitor.positionField(GPSFields.StartPositionField,
                 start_position);
         end_position = visitor.positionField(GPSFields.EndPositionField,
                 end_position);
         calories = (int) visitor.intField(UINT16, GPSFields.CaloriesField,
-                calories, 0, 0xFFFF, 0x10000);
+                calories, CaloriesSpecification, 0x10000);
         track_index = (short) visitor.intField(UINT8, GPSFields.IndexField,
-                track_index, 0, 255, 256);
-        visitor.intField(UINT8, GPSFields.UnusedField, track_index, 0, 0, 0);
+                track_index, IndexSpecification, 256);
+        visitor.intField(UINT8, GPSFields.UnusedField, track_index,
+                IndexSpecification, 0);
     }
 
     public String getPacketType() {

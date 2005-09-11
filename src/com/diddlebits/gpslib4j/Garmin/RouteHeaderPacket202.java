@@ -19,11 +19,8 @@ public class RouteHeaderPacket202 extends GarminPacket implements IRouteHeader {
      * @throws PacketNotRecognizedException
      */
 
-    public RouteHeaderPacket202(GarminRawPacket p)
-            throws PacketNotRecognizedException, InvalidFieldValue {
+    public RouteHeaderPacket202() {
         super();
-
-        initFromRawPacket(p);
     }
 
     protected void visit(GarminGPSDataVisitor visitor) throws InvalidFieldValue {
