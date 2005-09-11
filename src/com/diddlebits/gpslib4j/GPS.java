@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import com.diddlebits.gpslib4j.Garmin.GarminGPS;
+import com.diddlebits.gpslib4j.Garmin.InvalidPacketException;
 
 /**
  * This is the abstract base-class that encapsulates the functionality of a
@@ -18,9 +19,18 @@ import com.diddlebits.gpslib4j.Garmin.GarminGPS;
  * <li>the interface to request data from the GPS</li>
  * </ul>
  */
-public abstract class GPS {
+public abstract class GPS implements Runnable {
 
     protected HashMap zListeners;
+
+    /** The listening thread */
+    protected Thread listener;
+
+    /**
+     * The listening thread will be active as long as this variable remains
+     * true.
+     */
+    protected boolean active;
 
     static protected Vector Brands;
 
@@ -36,7 +46,7 @@ public abstract class GPS {
     }
 
     /**
-     * Factory method to create a GPS interface
+     * Factory method to create a GPS interface with a real GPS connected.
      * 
      * @param brand
      *            One of the string returned by GetBrand()
@@ -44,7 +54,7 @@ public abstract class GPS {
      *            The input stream to use to communicate with the GPS
      * @param o
      *            The output stream to use to communication with the GPS
-     * @param toNotifiyWhenInit
+     * @param toNotifyWhenInit
      *            The object to notify when the connection is done
      * @return The concrete GPS interface.
      * @throws FeatureNotSupportedException
@@ -53,16 +63,29 @@ public abstract class GPS {
     public static GPS CreateInterface(String brand, BufferedInputStream i,
             BufferedOutputStream o, ITransferListener toNotifyWhenInit)
             throws FeatureNotSupportedException {
-        if (brand.compareTo("GARMIN") == 0) {
-            return new GarminGPS(i, o, toNotifyWhenInit);
+        GPS result;
+        if (brand.toUpperCase().compareTo("GARMIN") == 0) {
+            result = new GarminGPS();
         } else {
             throw new FeatureNotSupportedException();
         }
+        result.addTransferListener(toNotifyWhenInit);
+        result.connectGPS(i, o);
+        return result;
     }
 
-    protected GPS(ITransferListener toNotifyWhenInit) {
+    /**
+     * Start the commmunication with the GPS.
+     */
+    public void connectGPS(BufferedInputStream i, BufferedOutputStream o) throws FeatureNotSupportedException {
+        //start the thread that makes the synchrone communication asynchrone
+        listener = new Thread(this);
+        listener.start();
+        active = true;
+    }
+
+    protected GPS() {
         zListeners = new HashMap();
-        addTransferListener(toNotifyWhenInit);
     }
 
     /**
@@ -435,4 +458,63 @@ public abstract class GPS {
      */
     public abstract void shutdown(boolean b)
             throws FeatureNotSupportedException, IOException;
+
+    /**
+     * @return a factory for creating data in a format that is specific to the
+     *         current GPS.
+     */
+    public abstract IGPSFactory getFactory();
+
+    /**
+     * This method is listening for input from the GPS.
+     */
+    public void run() {
+        while (active) {
+            // try to get something from the GPS
+            try {
+                if (inputAvailable() == 0) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                    }
+                    continue;
+                }
+                handleInput();
+            } catch (IOException e) {
+                active = false;
+                return;
+            } catch (InvalidPacketException e) {
+                fireError(e);
+                // Send back a NAK-packet.
+                try {
+                    sendNack();
+                } catch (IOException ex) {
+                    active = false;
+                    fireError(ex);
+                    return;
+                } catch (InvalidPacketException ex) {
+                    ex.printStackTrace();
+                    active = false;
+                    fireError(ex);
+                    return;
+                }
+            }
+        } // End of while(active)
+        
+        disconnectGPS();
+    }
+
+    protected abstract void disconnectGPS();
+
+    protected abstract int inputAvailable() throws IOException;
+
+    protected abstract void sendNack() throws IOException,
+            InvalidPacketException;
+
+    /**
+     * Read, parse and react to a packet.
+     */
+    protected abstract void handleInput()
+            throws InvalidPacketException, IOException;
+
 }
