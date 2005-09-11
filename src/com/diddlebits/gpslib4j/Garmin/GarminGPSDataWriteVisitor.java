@@ -27,18 +27,14 @@ public class GarminGPSDataWriteVisitor extends GarminGPSDataVisitor {
         }
     }
 
-    public long intField(int type, String name, long value, long minValue,
-            long maxValue, long nullValue) throws InvalidFieldValue {
+    public long intField(int type, String name, long value,
+            IntegerSpecification spec, long nullValue) throws InvalidFieldValue {
         if (IsInternalField(name))
             return value;
         try {
             long ret = visitor.intField(GetPureFieldName(name),
-                    value != nullValue, value, minValue, maxValue);
-            if (ret < minValue || ret > maxValue) {
-                throw new InvalidFieldValue(GetPureFieldName(name), Long
-                        .toString(ret), "Out of range (" + minValue + ".."
-                        + maxValue + ")");
-            }
+                    value != nullValue, value, spec);
+            spec.throwIfInvalid(GetPureFieldName(name), value);
             return ret;
         } catch (NullField e) {
             return nullValue;
@@ -52,8 +48,8 @@ public class GarminGPSDataWriteVisitor extends GarminGPSDataVisitor {
         try {
             double ret = visitor.floatField(GetPureFieldName(name),
                     value <= 9e24, value, spec);
-            String error=spec.validate(ret);
-            if (error!=null) {
+            String error = spec.validate(ret);
+            if (error != null) {
                 throw new InvalidFieldValue(GetPureFieldName(name), Double
                         .toString(ret), error);
             }

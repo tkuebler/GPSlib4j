@@ -9,7 +9,7 @@ import com.diddlebits.gpslib4j.*;
 /**
  * Vistor that reads a raw packet and initialise the fields with it.
  * 
- * @see GarminPacket::initFromRawPacket
+ * @see GarminPacket#initFromRawPacket
  */
 public class GarminGPSDataParserVisitor extends GarminGPSDataVisitor {
     /** The raw packet we are parsing */
@@ -27,23 +27,31 @@ public class GarminGPSDataParserVisitor extends GarminGPSDataVisitor {
         return source.readBoolean();
     }
 
-    public long intField(int type, String name, long value, long minValue,
-            long maxValue, long nullValue) throws InvalidFieldValue {
+    public long intField(int type, String name, long value,
+            IntegerSpecification spec, long nullValue) throws InvalidFieldValue {
         if (IsVirtualField(name))
             return value;
+        long result;
         switch (type) {
         case GarminPacket.UINT8:
-            return source.readByte();
+            result = source.readByte();
+            break;
         case GarminPacket.UINT16:
-            return source.readWord();
+            result = source.readWord();
+            break;
         case GarminPacket.SINT16:
-            return source.readSignedWord();
+            result = source.readSignedWord();
+            break;
         case GarminPacket.UINT32:
-            return source.readLong();
+            result = source.readLong();
+            break;
         default:
             throw new InvalidFieldValue(name + " type", Integer.toString(type),
                     "Unknown data type (internal error)");
         }
+        if (result != nullValue)
+            spec.warningIfInvalid(name, result);
+        return result;
     }
 
     public double floatField(int type, String name, double value,
@@ -97,8 +105,8 @@ public class GarminGPSDataParserVisitor extends GarminGPSDataVisitor {
         switch (type) {
         case GarminPacket.LONG_DATE:
             long secs = source.readLong();
-            if(secs!=0xFFFFFFFF && secs!=0 && secs!=0x7FFFFFFF) {
-                return new Date((secs + TimeOffset)*1000);
+            if (secs != 0xFFFFFFFF && secs != 0 && secs != 0x7FFFFFFF) {
+                return new Date((secs + TimeOffset) * 1000);
             } else {
                 return null;
             }
@@ -122,8 +130,8 @@ public class GarminGPSDataParserVisitor extends GarminGPSDataVisitor {
             GPSEnumDefinition definition) throws InvalidFieldValue {
         if (IsVirtualField(name))
             return value;
-        return (int) intField(type, name, value, definition.getMinValue(),
-                definition.getMaxValue(), definition.getMaxValue() + 1);
+        return (int) intField(type, name, value, new IntegerSpecification(
+                definition), definition.getMaxValue() + 1);
     }
 
     public void startEntry(String type) {

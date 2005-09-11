@@ -22,11 +22,11 @@ public class GarminGPSDataReadVisitor extends GarminGPSDataVisitor {
         return value;
     }
 
-    public long intField(int type, String name, long value, long minValue,
-            long maxValue, long nullValue) {
+    public long intField(int type, String name, long value,
+            IntegerSpecification spec, long nullValue) {
         if (!IsInternalField(name)) {
             visitor.intField(GetPureFieldName(name), value != nullValue, value,
-                    minValue, maxValue);
+                    spec);
         }
         return value;
     }
@@ -43,8 +43,8 @@ public class GarminGPSDataReadVisitor extends GarminGPSDataVisitor {
     public String stringField(int type, String name, String value,
             StringValidator validator) {
         if (!IsInternalField(name)) {
-            visitor.stringField(GetPureFieldName(name), value!=null && value.length() > 0,
-                    value, validator);
+            visitor.stringField(GetPureFieldName(name), value != null
+                    && value.length() > 0, value, validator);
         }
         return value;
     }

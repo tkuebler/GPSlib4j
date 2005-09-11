@@ -13,13 +13,13 @@ public class GarminStringValidatorsFactory {
 
     public static StringValidator CreateWaypointIdent(int maxLength,
             boolean emptyAllowed) throws InvalidFieldValue {
-        return new RegexpStringValidator("waypoint indentifier", "^[A-Z0-9 ]*",
-                maxLength, emptyAllowed);
+        return new RegexpStringValidator("waypoint indentifier",
+                "^[A-Z0-9 ]*$", maxLength, emptyAllowed);
     }
 
     public static StringValidator CreateIdent(int maxLength,
             boolean emptyAllowed) throws InvalidFieldValue {
-        return new RegexpStringValidator("identifer", "^[-A-Z0-9 ]*",
+        return new RegexpStringValidator("identifer", "^[-A-Z0-9 ]*$",
                 maxLength, emptyAllowed);
     }
 
