@@ -105,7 +105,7 @@ public class GarminGPSDataParserVisitor extends GarminGPSDataVisitor {
         switch (type) {
         case GarminPacket.LONG_DATE:
             long secs = source.readLong();
-            if (secs != 0xFFFFFFFF && secs != 0 && secs != 0x7FFFFFFF) {
+            if (secs != 0xFFFFFFFFl && secs != 0 && secs != 0x7FFFFFFFl) {
                 return new Date((secs + TimeOffset) * 1000);
             } else {
                 return null;

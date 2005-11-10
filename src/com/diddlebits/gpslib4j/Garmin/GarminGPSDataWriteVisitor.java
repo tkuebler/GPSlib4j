@@ -84,8 +84,8 @@ public class GarminGPSDataWriteVisitor extends GarminGPSDataVisitor {
         if (IsInternalField(name))
             return value;
         Date newVal;
-        newVal = visitor.timeField(GetPureFieldName(name), value != 0xFFFFFFFF
-                && value != 0x7FFFFFFF && value != 0, new Date(value
+        newVal = visitor.timeField(GetPureFieldName(name), value != 0xFFFFFFFFl
+                && value != 0x7FFFFFFFl && value != 0, new Date(value
                 + TimeOffset));
         if (newVal != null) {
             return newVal.getTime() - TimeOffset;
