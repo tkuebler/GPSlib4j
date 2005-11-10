@@ -11,6 +11,7 @@ import com.diddlebits.gpslib4j.IconEnumDefinition;
 import com.diddlebits.gpslib4j.IntegerSpecification;
 import com.diddlebits.gpslib4j.InvalidFieldValue;
 import com.diddlebits.gpslib4j.Position;
+import com.diddlebits.gpslib4j.StringValidator;
 
 /**
  * This class encapsulates a Waypoint-packet. The Garmin-protocol contains a
@@ -19,6 +20,8 @@ import com.diddlebits.gpslib4j.Position;
  */
 public class WaypointDataPacket108 extends GarminPacket implements IWaypoint,
         IAltitude {
+    private static final long serialVersionUID = 2288225818732681749L;
+
     /** Class of waypoint. */
     protected short wpt_class;
 
@@ -87,6 +90,8 @@ public class WaypointDataPacket108 extends GarminPacket implements IWaypoint,
     protected static IntegerSpecification DummySpecification = new IntegerSpecification(
             0x60, 0x60, false);
 
+    private static StringValidator IdentValidator;
+
     public WaypointDataPacket108() {
         super();
     }
@@ -99,9 +104,9 @@ public class WaypointDataPacket108 extends GarminPacket implements IWaypoint,
      */
     public void initFromRawPacket(GarminRawPacket p)
             throws PacketNotRecognizedException, InvalidFieldValue {
-        if (p.getID() != GarminRawPacket.Pid_Wpt_Data) {
+        if (p.getPID() != GarminRawPacket.Pid_Wpt_Data) {
             throw (new PacketNotRecognizedException(
-                    GarminRawPacket.Pid_Wpt_Data, p.getID()));
+                    GarminRawPacket.Pid_Wpt_Data, p.getPID()));
         }
 
         super.initFromRawPacket(p);
@@ -133,7 +138,7 @@ public class WaypointDataPacket108 extends GarminPacket implements IWaypoint,
         cc = visitor.stringField(ACHAR, GPSFields.CountryCodeField, cc,
                 GarminStringValidatorsFactory.CreateCountryCode(2, true));
         ident = visitor.stringField(VCHAR, GPSFields.IdentField, ident,
-                GarminStringValidatorsFactory.CreateWaypointIdent(100, false));
+                GetIdentValidator());
         if (wpt_class != 0x00) {
             // only user waypoints can have comments
             comment = "";
@@ -466,11 +471,20 @@ public class WaypointDataPacket108 extends GarminPacket implements IWaypoint,
         return position;
     }
 
+    public void setPosition(Position position) {
+        this.position = position;
+    }
+
     /**
      * This method returns the name of the waypoint.
      */
     public String getIdent() {
         return ident;
+    }
+
+    public void setIdent(String ident) throws InvalidFieldValue {
+        GetIdentValidator().throwIfInvalid(GPSFields.IdentField, ident);
+        this.ident = ident;
     }
 
     public static GPSEnumDefinition getColorEnum() {
@@ -551,5 +565,22 @@ public class WaypointDataPacket108 extends GarminPacket implements IWaypoint,
 
     public String getAddress() {
         return address;
+    }
+
+    protected static StringValidator GetIdentValidator() {
+        if (IdentValidator == null) {
+            try {
+                IdentValidator = GarminStringValidatorsFactory
+                        .CreateWaypointIdent(100, false);
+            } catch (InvalidFieldValue e) {
+                e.printStackTrace();
+                System.exit(-1);
+            }
+        }
+        return IdentValidator;
+    }
+
+    public int getPacketId() {
+        return GarminRawPacket.Pid_Wpt_Data;
     }
 }

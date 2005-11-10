@@ -10,6 +10,8 @@ import com.diddlebits.gpslib4j.InvalidFieldValue;
  * huge amount of different trackpoint-Packet specifications.
  */
 public class RouteHeaderPacket200 extends GarminPacket implements IRouteHeader {
+    private static final long serialVersionUID = 3780219741317781687L;
+
     protected short routeNumber;
 
     protected static IntegerSpecification NumberSpecification = new IntegerSpecification(
@@ -38,5 +40,13 @@ public class RouteHeaderPacket200 extends GarminPacket implements IRouteHeader {
 
     public String getIdent() {
         return String.valueOf(routeNumber);
+    }
+
+    public void setIdent(String value) throws InvalidFieldValue {
+        routeNumber = (short) NumberSpecification.convertFromString(value);
+    }
+
+    public int getPacketId() {
+        return GarminRawPacket.Pid_Rte_Hdr;
     }
 }

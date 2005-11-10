@@ -10,6 +10,7 @@ import com.diddlebits.gpslib4j.*;
  */
 public class TrackpointDataPacket300 extends GarminPacket implements
         ITrackpoint {
+    private static final long serialVersionUID = -3699921181493293499L;
 
     protected int index = -1;
 
@@ -42,6 +43,10 @@ public class TrackpointDataPacket300 extends GarminPacket implements
         return position;
     }
 
+    public void setPosition(Position position) {
+        this.position = position;
+    }
+
     public Date getTime() {
         return time;
     }
@@ -58,5 +63,9 @@ public class TrackpointDataPacket300 extends GarminPacket implements
 
     public String getPacketType() {
         return "trackpoint";
+    }
+
+    public int getPacketId() {
+        return GarminRawPacket.Pid_Trk_data;
     }
 }

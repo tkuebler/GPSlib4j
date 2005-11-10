@@ -1,11 +1,14 @@
 package com.diddlebits.gpslib4j.Garmin;
 
+import java.io.Serializable;
+
 import com.diddlebits.gpslib4j.IntegerSpecification;
 import com.diddlebits.gpslib4j.InvalidFieldValue;
 import com.diddlebits.gpslib4j.RegexpStringValidator;
 import com.diddlebits.gpslib4j.StringValidator;
 
-public class ProtocolDataPacket extends GarminPacket {
+public class ProtocolDataPacket extends GarminPacket implements Serializable {
+    private static final long serialVersionUID = 7083954641996740515L;
 
     protected char[] tags;
 
@@ -32,9 +35,9 @@ public class ProtocolDataPacket extends GarminPacket {
      */
     public void initFromRawPacket(GarminRawPacket p)
             throws PacketNotRecognizedException, InvalidFieldValue {
-        if (p.getID() != GarminRawPacket.Pid_Protocol_Array) {
+        if (p.getPID() != GarminRawPacket.Pid_Protocol_Array) {
             throw (new PacketNotRecognizedException(
-                    GarminRawPacket.Pid_Protocol_Array, p.getID()));
+                    GarminRawPacket.Pid_Protocol_Array, p.getPID()));
         }
 
         if (p.getDataLength() % 3 != 0) {
@@ -99,5 +102,9 @@ public class ProtocolDataPacket extends GarminPacket {
             TagValidator = new RegexpStringValidator("tag", "[LAD]", 1, false);
         }
         return TagValidator;
+    }
+
+    public int getPacketId() {
+        return GarminRawPacket.Pid_Protocol_Array;
     }
 }

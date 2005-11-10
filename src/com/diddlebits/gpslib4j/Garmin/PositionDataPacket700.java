@@ -3,6 +3,8 @@ package com.diddlebits.gpslib4j.Garmin;
 import com.diddlebits.gpslib4j.*;
 
 public class PositionDataPacket700 extends GarminPacket implements IPosition {
+    private static final long serialVersionUID = 2343308973089279701L;
+
     private Position position;
 
     public PositionDataPacket700() {
@@ -19,9 +21,9 @@ public class PositionDataPacket700 extends GarminPacket implements IPosition {
      */
     public void initFromRawPacket(GarminRawPacket p)
             throws PacketNotRecognizedException, InvalidFieldValue {
-        if (p.getID() != GarminRawPacket.Pid_Position_Data) {
+        if (p.getPID() != GarminRawPacket.Pid_Position_Data) {
             throw (new PacketNotRecognizedException(
-                    GarminRawPacket.Pid_Position_Data, p.getID()));
+                    GarminRawPacket.Pid_Position_Data, p.getPID()));
         }
 
         super.initFromRawPacket(p);
@@ -34,11 +36,19 @@ public class PositionDataPacket700 extends GarminPacket implements IPosition {
         return position;
     }
 
+    public void setPosition(Position position) {
+        this.position = position;
+    }
+
     protected void visit(GarminGPSDataVisitor visitor) throws InvalidFieldValue {
         position = visitor.positionField(GPSFields.PositionField, position);
     }
 
     public String getPacketType() {
         return "position";
+    }
+
+    public int getPacketId() {
+        return GarminRawPacket.Pid_Position_Data;
     }
 }

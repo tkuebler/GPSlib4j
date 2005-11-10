@@ -92,6 +92,7 @@ public class GarminRawPacket extends GarminPacket {
 
     public GarminRawPacket(int[] p, boolean calcChecksum)
             throws InvalidPacketException {
+        super();
         packet = (int[]) p.clone();
 
         if (calcChecksum) {
@@ -188,9 +189,9 @@ public class GarminRawPacket extends GarminPacket {
     }
 
     /**
-     * Returns the ID (ie. type) of the packet.
+     * Returns the PID (ie. type) of the packet.
      */
-    public int getID() {
+    public int getPID() {
         return packet[1];
     }
 
@@ -374,22 +375,22 @@ public class GarminRawPacket extends GarminPacket {
         return res.toString();
     }
 
-    static final Pattern SpaceAtTheEnd=Pattern.compile(" +$");
+    static final Pattern SpaceAtTheEnd = Pattern.compile(" +$");
 
     protected String readFixedLengthString(int length) {
         StringBuffer res = new StringBuffer();
         int target = pointer + length;
-        //get the content, ignoring the usual weird 
+        // get the content, ignoring the usual weird
         while (pointer < target) {
             if (packet[pointer] != 0 && packet[pointer] != 255) {
                 res.append((char) packet[pointer]);
             }
             pointer++;
         }
-        
-        //remove the spaces at the end (sometimes used as filler)
+
+        // remove the spaces at the end (sometimes used as filler)
         Matcher matcher = SpaceAtTheEnd.matcher(res.toString());
-        if(matcher.matches()) {
+        if (matcher.matches()) {
             return matcher.replaceFirst("");
         } else {
             return res.toString();
@@ -442,9 +443,8 @@ public class GarminRawPacket extends GarminPacket {
         if (la == 0x7FFFFFFF && lo == 0x7FFFFFFF) {
             return null;
         } else {
-            return new Position(
-                    (la * 180) / Math.pow(2.0d, 31.0d),
-                    (lo * 180) / Math.pow(2.0d, 31.0d));
+            return new Position((la * 180.0) / Math.pow(2.0d, 31.0d),
+                    (lo * 180.0) / Math.pow(2.0d, 31.0d));
         }
     }
 
@@ -454,5 +454,10 @@ public class GarminRawPacket extends GarminPacket {
 
     public String getPacketType() {
         return "raw packet";
+    }
+
+    public int getPacketId() {
+        throw new RuntimeException(
+                "GarminRawPacket.getPacketId not supposed to be called");
     }
 }

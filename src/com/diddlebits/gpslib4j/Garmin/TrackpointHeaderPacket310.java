@@ -10,6 +10,10 @@ import com.diddlebits.gpslib4j.*;
  */
 public class TrackpointHeaderPacket310 extends GarminPacket implements
         ITrackpointHeader {
+    private static StringValidator IdentValidator;
+
+    private static final long serialVersionUID = -4888015944405707438L;
+
     protected boolean dspl;
 
     protected short color;
@@ -34,7 +38,7 @@ public class TrackpointHeaderPacket310 extends GarminPacket implements
         color = (short) visitor.enumField(UINT8, GPSFields.ColorField, color,
                 GetColorEnum());
         ident = visitor.stringField(VCHAR, GPSFields.IdentField, ident,
-                GarminStringValidatorsFactory.CreateIdent(50, false));
+                GetIdentValidator());
     }
 
     private static GPSEnumDefinition GetColorEnum() {
@@ -74,5 +78,27 @@ public class TrackpointHeaderPacket310 extends GarminPacket implements
 
     public String getIdent() {
         return ident;
+    }
+
+    public void setIdent(String ident) throws InvalidFieldValue {
+        GetIdentValidator().throwIfInvalid(GPSFields.IdentField, ident);
+        this.ident = ident;
+    }
+
+    protected static StringValidator GetIdentValidator() {
+        if (IdentValidator == null) {
+            try {
+                IdentValidator = GarminStringValidatorsFactory.CreateIdent(50,
+                        false);
+            } catch (InvalidFieldValue e) {
+                e.printStackTrace();
+                System.exit(-1);
+            }
+        }
+        return IdentValidator;
+    }
+
+    public int getPacketId() {
+        return GarminRawPacket.Pid_Trk_Hdr;
     }
 }

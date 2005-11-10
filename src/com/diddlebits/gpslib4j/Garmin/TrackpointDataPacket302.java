@@ -10,6 +10,7 @@ import com.diddlebits.gpslib4j.*;
  */
 public class TrackpointDataPacket302 extends GarminPacket implements
         ITrackpoint, IAltitude {
+    private static final long serialVersionUID = -3424306699977690814L;
 
     protected int index = -1;
 
@@ -59,6 +60,10 @@ public class TrackpointDataPacket302 extends GarminPacket implements
         return position;
     }
 
+    public void setPosition(Position position) {
+        this.position = position;
+    }
+
     public Date getTime() {
         return time;
     }
@@ -93,5 +98,9 @@ public class TrackpointDataPacket302 extends GarminPacket implements
 
     public boolean isNewTrk() {
         return new_trk;
+    }
+
+    public int getPacketId() {
+        return GarminRawPacket.Pid_Trk_data;
     }
 }

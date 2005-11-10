@@ -27,9 +27,9 @@ public class TimeDataPacket600 extends GarminPacket implements ITimeDate {
      */
     public void initFromRawPacket(GarminRawPacket p)
             throws PacketNotRecognizedException, InvalidFieldValue {
-        if (p.getID() != GarminRawPacket.Pid_Date_Time_Data) {
+        if (p.getPID() != GarminRawPacket.Pid_Date_Time_Data) {
             throw (new PacketNotRecognizedException(
-                    GarminRawPacket.Pid_Date_Time_Data, p.getID()));
+                    GarminRawPacket.Pid_Date_Time_Data, p.getPID()));
         }
 
         if (p.getDataLength() != 8) {
@@ -50,5 +50,9 @@ public class TimeDataPacket600 extends GarminPacket implements ITimeDate {
 
     public String getPacketType() {
         return "time";
+    }
+
+    public int getPacketId() {
+        return GarminRawPacket.Pid_Date_Time_Data;
     }
 }

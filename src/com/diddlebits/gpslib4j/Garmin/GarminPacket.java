@@ -85,4 +85,13 @@ public abstract class GarminPacket {
         // if the childs are having mutable attributes, we are screwed...
         return super.clone();
     }
+
+    public GarminRawPacket createRawPacket() throws InvalidFieldValue,
+            InvalidPacketException {
+        GarminGPSDataRawVisitor visitor = new GarminGPSDataRawVisitor(this);
+        visit(visitor);
+        return visitor.getRawPacket();
+    }
+
+    public abstract int getPacketId();
 }

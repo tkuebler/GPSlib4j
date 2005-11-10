@@ -8,6 +8,8 @@ import com.diddlebits.gpslib4j.*;
  * labelled D108 is implemented so far.
  */
 public class WaypointDataPacket103 extends GarminPacket implements IWaypoint {
+    private static final long serialVersionUID = 3961298775187937427L;
+
     protected String ident;
 
     /** Position of waypoint. */
@@ -29,6 +31,8 @@ public class WaypointDataPacket103 extends GarminPacket implements IWaypoint {
     protected static IntegerSpecification DummySpecification = new IntegerSpecification(
             0, 0, false);
 
+    private static StringValidator IdentValidator;
+
     /**
      * Throws a PacketNotRecognizedException if the Waypoint-dataformat is not
      * implemented.
@@ -46,9 +50,9 @@ public class WaypointDataPacket103 extends GarminPacket implements IWaypoint {
      */
     public void initFromRawPacket(GarminRawPacket p)
             throws PacketNotRecognizedException, InvalidFieldValue {
-        if (p.getID() != GarminRawPacket.Pid_Wpt_Data) {
+        if (p.getPID() != GarminRawPacket.Pid_Wpt_Data) {
             throw (new PacketNotRecognizedException(
-                    GarminRawPacket.Pid_Wpt_Data, p.getID()));
+                    GarminRawPacket.Pid_Wpt_Data, p.getPID()));
         }
 
         super.initFromRawPacket(p);
@@ -61,11 +65,20 @@ public class WaypointDataPacket103 extends GarminPacket implements IWaypoint {
         return position;
     }
 
+    public void setPosition(Position position) {
+        this.position = position;
+    }
+
     /**
      * This method returns the name of the waypoint.
      */
     public String getIdent() {
         return ident;
+    }
+
+    public void setIdent(String ident) throws InvalidFieldValue {
+        GetIdentValidator().throwIfInvalid(GPSFields.IdentField, ident);
+        this.ident = ident;
     }
 
     public String getComment() {
@@ -82,7 +95,7 @@ public class WaypointDataPacket103 extends GarminPacket implements IWaypoint {
 
     protected void visit(GarminGPSDataVisitor visitor) throws InvalidFieldValue {
         ident = visitor.stringField(ACHAR, GPSFields.IdentField, ident,
-                GarminStringValidatorsFactory.CreateWaypointIdent(6, false));
+                GetIdentValidator());
         position = visitor.positionField(GPSFields.PositionField, position);
         visitor.intField(UINT32, GPSFields.UnusedField, 0, DummySpecification,
                 0);
@@ -129,5 +142,22 @@ public class WaypointDataPacket103 extends GarminPacket implements IWaypoint {
 
     public String getPacketType() {
         return "waypoint";
+    }
+
+    protected static StringValidator GetIdentValidator() {
+        if (IdentValidator == null) {
+            try {
+                IdentValidator = GarminStringValidatorsFactory
+                        .CreateWaypointIdent(6, false);
+            } catch (InvalidFieldValue e) {
+                e.printStackTrace();
+                System.exit(-1);
+            }
+        }
+        return IdentValidator;
+    }
+
+    public int getPacketId() {
+        return GarminRawPacket.Pid_Wpt_Data;
     }
 }

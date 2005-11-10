@@ -5,7 +5,9 @@ package com.diddlebits.gpslib4j;
  */
 public interface IPosition extends IGPSData {
     /**
-     * This method returns the latitude of the position.
+     * This method returns the latitude and longitude.
      */
     public Position getPosition();
+
+    public void setPosition(Position position);
 };

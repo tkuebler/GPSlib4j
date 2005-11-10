@@ -20,11 +20,16 @@ public class RecordsPacket extends GarminPacket {
         super();
     }
 
+    public RecordsPacket(int number) {
+        this();
+        this.number = number;
+    }
+
     public void initFromRawPacket(GarminRawPacket p)
             throws PacketNotRecognizedException, InvalidFieldValue {
-        if (p.getID() != GarminRawPacket.Pid_Records) {
+        if (p.getPID() != GarminRawPacket.Pid_Records) {
             throw (new PacketNotRecognizedException(
-                    GarminRawPacket.Pid_Records, p.getID()));
+                    GarminRawPacket.Pid_Records, p.getPID()));
         }
 
         if (p.getDataLength() != 2) {
@@ -47,5 +52,9 @@ public class RecordsPacket extends GarminPacket {
 
     public String getPacketType() {
         return "records";
+    }
+
+    public int getPacketId() {
+        return GarminRawPacket.Pid_Records;
     }
 }

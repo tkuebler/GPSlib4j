@@ -8,6 +8,8 @@ import com.diddlebits.gpslib4j.*;
  */
 public class RouteWaypointPacket210 extends GarminPacket implements
         IRouteWaypoint {
+    private static final long serialVersionUID = -4776310485094954856L;
+
     protected int wpClass;
 
     protected String subClass;
@@ -73,5 +75,9 @@ public class RouteWaypointPacket210 extends GarminPacket implements
 
     public void setWpClass(int wpClass) {
         this.wpClass = wpClass;
+    }
+
+    public int getPacketId() {
+        return GarminRawPacket.Pid_Rte_Wpt_Data;
     }
 }

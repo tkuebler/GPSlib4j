@@ -10,6 +10,8 @@ import com.diddlebits.gpslib4j.*;
  */
 public class TrackpointHeaderPacket312 extends GarminPacket implements
         ITrackpointHeader {
+    private static final long serialVersionUID = -1388806686711583564L;
+
     protected boolean dspl;
 
     protected short color;
@@ -17,6 +19,8 @@ public class TrackpointHeaderPacket312 extends GarminPacket implements
     protected String ident;
 
     private static GPSEnumDefinition ColorEnum;
+
+    private static StringValidator IdentValidator;
 
     /**
      * Throws a PacketNotRecognizedException if the Trackpoint-dataformat is not
@@ -35,7 +39,7 @@ public class TrackpointHeaderPacket312 extends GarminPacket implements
         color = (short) visitor.enumField(UINT8, GPSFields.ColorField, color,
                 GetColorEnum());
         ident = visitor.stringField(VCHAR, GPSFields.IdentField, ident,
-                GarminStringValidatorsFactory.CreateIdent(50, false));
+                GetIdentValidator());
     }
 
     public short getColor() {
@@ -48,6 +52,11 @@ public class TrackpointHeaderPacket312 extends GarminPacket implements
 
     public String getIdent() {
         return ident;
+    }
+
+    public void setIdent(String ident) throws InvalidFieldValue {
+        GetIdentValidator().throwIfInvalid(GPSFields.IdentField, ident);
+        this.ident = ident;
     }
 
     private static GPSEnumDefinition GetColorEnum() {
@@ -76,5 +85,22 @@ public class TrackpointHeaderPacket312 extends GarminPacket implements
 
     public String getPacketType() {
         return "trackpoint header";
+    }
+
+    protected static StringValidator GetIdentValidator() {
+        if (IdentValidator == null) {
+            try {
+                IdentValidator = GarminStringValidatorsFactory.CreateIdent(50,
+                        false);
+            } catch (InvalidFieldValue e) {
+                e.printStackTrace();
+                System.exit(-1);
+            }
+        }
+        return IdentValidator;
+    }
+
+    public int getPacketId() {
+        return GarminRawPacket.Pid_Trk_Hdr;
     }
 }

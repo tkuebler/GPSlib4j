@@ -1,8 +1,12 @@
 package com.diddlebits.gpslib4j.Garmin;
 
+import java.io.Serializable;
+
 import com.diddlebits.gpslib4j.*;
 
-public class ProductDataPacket extends GarminPacket {
+public class ProductDataPacket extends GarminPacket implements Serializable {
+    private static final long serialVersionUID = -5072518834552481189L;
+
     /** Product-ID of GPS. */
     protected int productID;
 
@@ -35,9 +39,9 @@ public class ProductDataPacket extends GarminPacket {
      */
     public void initFromRawPacket(GarminRawPacket p)
             throws PacketNotRecognizedException, InvalidFieldValue {
-        if (p.getID() != GarminRawPacket.Pid_Product_Data) {
+        if (p.getPID() != GarminRawPacket.Pid_Product_Data) {
             throw (new PacketNotRecognizedException(
-                    GarminRawPacket.Pid_Product_Data, p.getID()));
+                    GarminRawPacket.Pid_Product_Data, p.getPID()));
         }
 
         super.initFromRawPacket(p);
@@ -79,5 +83,9 @@ public class ProductDataPacket extends GarminPacket {
                     "product description", "^[\\w \\.]*$", 100, false);
         }
         return ProductDescValidator;
+    }
+
+    public int getPacketId() {
+        return GarminRawPacket.Pid_Product_Data;
     }
 }

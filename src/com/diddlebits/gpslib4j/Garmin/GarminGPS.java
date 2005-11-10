@@ -3,6 +3,9 @@ package com.diddlebits.gpslib4j.Garmin;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Vector;
 
 import com.diddlebits.gpslib4j.FeatureNotSupportedException;
@@ -111,7 +114,7 @@ public class GarminGPS extends GPS {
             throws ProtocolNotRecognizedException,
             ProtocolNotSupportedException, PacketNotRecognizedException,
             InvalidFieldValue, InvalidPacketException {
-        switch (p.getID()) {
+        switch (p.getPID()) {
         case GarminRawPacket.Pid_Position_Data: {
             IPosition result = GarminFactory.Get().createPosition();
             ((GarminPacket) result).initFromRawPacket(p);
@@ -222,9 +225,9 @@ public class GarminGPS extends GPS {
         }
 
         default:
-            System.out.println("Unknown packet type received: id=" + p.getID()
+            System.out.println("Unknown packet type received: id=" + p.getPID()
                     + ", data=" + p.getRawPacket());
-            throw new ProtocolNotRecognizedException('C', p.getID());
+            throw new ProtocolNotRecognizedException('C', p.getPID());
         }
     }
 
@@ -403,7 +406,7 @@ public class GarminGPS extends GPS {
                 // Send back a packet.
                 try {
                     output.write(GarminRawPacket.createBasicPacket(answer,
-                            new int[] { pack.getID(), 0 }));
+                            new int[] { pack.getPID(), 0 }));
                 } catch (IOException e) {
                     active = false;
                 }
@@ -414,8 +417,8 @@ public class GarminGPS extends GPS {
 
             try {
                 output.write(GarminRawPacket.createBasicPacket(
-                        GarminRawPacket.Pid_Nak_Byte, new int[] { pack.getID(),
-                                0 }));
+                        GarminRawPacket.Pid_Nak_Byte, new int[] {
+                                pack.getPID(), 0 }));
             } catch (IOException io) {
                 active = false;
                 fireError(io);
@@ -441,4 +444,99 @@ public class GarminGPS extends GPS {
         output = null;
     }
 
+    public void sendWaypoints(Collection waypoints)
+            throws InvalidPacketException, IOException,
+            ProtocolNotRecognizedException, ProtocolNotSupportedException,
+            InvalidFieldValue {
+        // first pass to check all the way point are of good type
+        Iterator it = waypoints.iterator();
+        Class wantedClass = GarminFactory.Get().createWaypoint().getClass();
+        while (it.hasNext()) {
+            Object curObj = it.next();
+
+            if (!wantedClass.isAssignableFrom(curObj.getClass())) {
+                throw new IOException("Invalid class. Supported: "
+                        + wantedClass.getCanonicalName());
+            }
+        }
+
+        // now we build the packet list
+        ArrayList toSend = new ArrayList(waypoints.size() + 2);
+        RecordsPacket records = new RecordsPacket(waypoints.size());
+        toSend.add(records);
+        toSend.addAll(waypoints);
+        XferCompletePacket complete = new XferCompletePacket(
+                GarminFactory.CmndTransferWpt);
+        toSend.add(complete);
+        sendPackets(toSend);
+    }
+
+    private void sendPackets(Collection toSend) throws InvalidFieldValue,
+            InvalidPacketException, IOException {
+        Iterator it = toSend.iterator();
+        while (it.hasNext()) {
+            GarminPacket cur = (GarminPacket) it.next();
+            GarminRawPacket raw = cur.createRawPacket();
+            sendOnePacket(raw);
+        }
+    }
+
+    private void sendOnePacket(GarminRawPacket raw) throws IOException,
+            InvalidPacketException {
+        output.write(raw);
+        GarminRawPacket answer = new GarminRawPacket(input.readPacket());
+        switch (answer.getPID()) {
+        case GarminRawPacket.Pid_Ack_Byte:
+            // happy camper
+            break;
+
+        case GarminRawPacket.Pid_Nak_Byte:
+            // TODO: maybe we should try to recover...
+            throw new IOException("NACK received from the GPS");
+
+        default:
+            throw new IOException("Received an unknown packet from the GPS: "
+                    + answer.getPID());
+        }
+    }
+
+    public void sendTrack(ITrackpointHeader header, Collection points)
+            throws ProtocolNotRecognizedException,
+            ProtocolNotSupportedException, IOException, InvalidFieldValue,
+            InvalidPacketException {
+        // first pass to check all the objects are of good type
+        Class wantedClassHeader = GarminFactory.Get().createTrackpointHeader()
+                .getClass();
+        if (!wantedClassHeader.isAssignableFrom(header.getClass())) {
+            throw new IOException("Invalid class. Supported: "
+                    + wantedClassHeader.getCanonicalName());
+        }
+
+        Iterator it = points.iterator();
+        Class wantedClassPoint = GarminFactory.Get().createTrackpoint()
+                .getClass();
+        while (it.hasNext()) {
+            Object curObj = it.next();
+
+            if (!wantedClassPoint.isAssignableFrom(curObj.getClass())) {
+                throw new IOException("Invalid class. Supported: "
+                        + wantedClassPoint.getCanonicalName());
+            }
+        }
+
+        // now we build the packet list
+        ArrayList toSend = new ArrayList(2 + points.size()
+                + (header != null ? 1 : 0));
+        RecordsPacket records = new RecordsPacket(points.size()
+                + (header != null ? 1 : 0));
+        toSend.add(records);
+        if (header != null) {
+            toSend.add(header);
+        }
+        toSend.addAll(points);
+        XferCompletePacket complete = new XferCompletePacket(
+                GarminFactory.CmndTransferWpt);
+        toSend.add(complete);
+        sendPackets(toSend);
+    }
 }

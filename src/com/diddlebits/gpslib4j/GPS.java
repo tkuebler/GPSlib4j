@@ -3,11 +3,14 @@ package com.diddlebits.gpslib4j;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Vector;
 
 import com.diddlebits.gpslib4j.Garmin.GarminGPS;
 import com.diddlebits.gpslib4j.Garmin.InvalidPacketException;
+import com.diddlebits.gpslib4j.Garmin.ProtocolNotRecognizedException;
+import com.diddlebits.gpslib4j.Garmin.ProtocolNotSupportedException;
 
 /**
  * This is the abstract base-class that encapsulates the functionality of a
@@ -77,8 +80,9 @@ public abstract class GPS implements Runnable {
     /**
      * Start the commmunication with the GPS.
      */
-    public void connectGPS(BufferedInputStream i, BufferedOutputStream o) throws FeatureNotSupportedException {
-        //start the thread that makes the synchrone communication asynchrone
+    public void connectGPS(BufferedInputStream i, BufferedOutputStream o)
+            throws FeatureNotSupportedException {
+        // start the thread that makes the synchrone communication asynchrone
         listener = new Thread(this);
         listener.start();
         active = true;
@@ -500,7 +504,7 @@ public abstract class GPS implements Runnable {
                 }
             }
         } // End of while(active)
-        
+
         disconnectGPS();
     }
 
@@ -514,7 +518,16 @@ public abstract class GPS implements Runnable {
     /**
      * Read, parse and react to a packet.
      */
-    protected abstract void handleInput()
-            throws InvalidPacketException, IOException;
+    protected abstract void handleInput() throws InvalidPacketException,
+            IOException;
 
+    public abstract void sendWaypoints(Collection waypoints)
+            throws InvalidPacketException, IOException,
+            ProtocolNotRecognizedException, ProtocolNotSupportedException,
+            InvalidFieldValue;
+
+    public abstract void sendTrack(ITrackpointHeader header, Collection points)
+            throws ProtocolNotRecognizedException,
+            ProtocolNotSupportedException, IOException, InvalidFieldValue,
+            InvalidPacketException;
 }
