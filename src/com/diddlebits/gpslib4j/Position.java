@@ -1,5 +1,6 @@
 package com.diddlebits.gpslib4j;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
@@ -7,7 +8,9 @@ import java.text.NumberFormat;
  * This is an immutable class meant for containing latitude/longitude positions.
  */
 
-public class Position {
+public class Position implements Serializable {
+    private static final long serialVersionUID = 7429097315442171838L;
+
     private static final double MIN_PRECISION = 0.00001;
 
     private double lat, lon;

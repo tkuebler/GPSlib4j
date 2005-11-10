@@ -1,12 +1,14 @@
 package com.diddlebits.gpslib4j;
 
+import java.io.Serializable;
+
 /**
  * Base class for
  * 
  * @author patrick
  * 
  */
-public interface IGPSData extends Cloneable {
+public interface IGPSData extends Cloneable, Serializable {
     public String toString();
 
     /**

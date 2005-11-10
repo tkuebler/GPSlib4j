@@ -1,5 +1,7 @@
 package com.diddlebits.gpslib4j;
 
+import java.io.Serializable;
+
 import com.diddlebits.gpslib4j.Garmin.ProtocolNotRecognizedException;
 import com.diddlebits.gpslib4j.Garmin.ProtocolNotSupportedException;
 
@@ -12,40 +14,35 @@ import com.diddlebits.gpslib4j.Garmin.ProtocolNotSupportedException;
  * 
  * @see GPS#getFactory()
  */
-public interface IGPSFactory {
+public interface IGPSFactory extends Serializable {
+    public ITimeDate createTimeDate() throws ProtocolNotRecognizedException,
+            ProtocolNotSupportedException;
 
-    public abstract ITimeDate createTimeDate()
+    public ILap createLap() throws ProtocolNotRecognizedException,
+            ProtocolNotSupportedException;
+
+    public IPosition createPosition() throws ProtocolNotRecognizedException,
+            ProtocolNotSupportedException;
+
+    public ITrackpoint createTrackpoint()
             throws ProtocolNotRecognizedException,
             ProtocolNotSupportedException;
 
-    public abstract ILap createLap() throws ProtocolNotRecognizedException,
-            ProtocolNotSupportedException;
-
-    public abstract IPosition createPosition()
+    public ITrackpointHeader createTrackpointHeader()
             throws ProtocolNotRecognizedException,
             ProtocolNotSupportedException;
 
-    public abstract ITrackpoint createTrackpoint()
+    public IWaypoint createWaypoint() throws ProtocolNotRecognizedException,
+            ProtocolNotSupportedException;
+
+    public IPosition createPVT() throws ProtocolNotRecognizedException,
+            ProtocolNotSupportedException;
+
+    public IRouteHeader createRouteHeader()
             throws ProtocolNotRecognizedException,
             ProtocolNotSupportedException;
 
-    public abstract ITrackpointHeader createTrackpointHeader()
-            throws ProtocolNotRecognizedException,
-            ProtocolNotSupportedException;
-
-    public abstract IWaypoint createWaypoint()
-            throws ProtocolNotRecognizedException,
-            ProtocolNotSupportedException;
-
-    public abstract IPosition createPVT()
-            throws ProtocolNotRecognizedException,
-            ProtocolNotSupportedException;
-
-    public abstract IRouteHeader createRouteHeader()
-            throws ProtocolNotRecognizedException,
-            ProtocolNotSupportedException;
-
-    public abstract IRouteWaypoint createRouteWaypoint()
+    public IRouteWaypoint createRouteWaypoint()
             throws ProtocolNotRecognizedException,
             ProtocolNotSupportedException;
 

@@ -17,6 +17,8 @@ import com.diddlebits.gpslib4j.InvalidFieldValue;
  * capabilities.
  */
 public class GarminFactory implements IGPSFactory {
+    private static final long serialVersionUID = 4142307769066730621L;
+
     // All the possible commands
     // ---------------------------------------------------
     // to get the real command ID, use getCommandId.
