@@ -9,6 +9,7 @@ import com.diddlebits.gpslib4j.*;
  */
 
 public class PVTDataPacket800 extends GarminPacket implements IPosition {
+    private static final long serialVersionUID = 1590205910373557728L;
 
     protected float alt; // Altitude
 
@@ -64,9 +65,9 @@ public class PVTDataPacket800 extends GarminPacket implements IPosition {
      */
     public void initFromRawPacket(GarminRawPacket p)
             throws PacketNotRecognizedException, InvalidFieldValue {
-        if (p.getID() != GarminRawPacket.Pid_Pvt_Data) {
+        if (p.getPID() != GarminRawPacket.Pid_Pvt_Data) {
             throw (new PacketNotRecognizedException(
-                    GarminRawPacket.Pid_Pvt_Data, p.getID()));
+                    GarminRawPacket.Pid_Pvt_Data, p.getPID()));
         }
 
         super.initFromRawPacket(p);
@@ -121,6 +122,10 @@ public class PVTDataPacket800 extends GarminPacket implements IPosition {
         return position;
     }
 
+    public void setPosition(Position position) {
+        this.position = position;
+    }
+
     public float getAlt() {
         return alt;
     }
@@ -167,5 +172,9 @@ public class PVTDataPacket800 extends GarminPacket implements IPosition {
 
     public long getWnDays() {
         return wn_days;
+    }
+
+    public int getPacketId() {
+        return GarminRawPacket.Pid_Pvt_Data;
     }
 }
