@@ -41,7 +41,7 @@ public class FloatSpecification {
     
     public String format2String(double value) {
         String result=String.valueOf(toPrecision(value));
-        int afterColon=(int)-Math.floor(Math.log10(precision));
+        int afterColon=(int)-Math.floor(Math.log(precision)/Math.log(10)); 
         if(afterColon>0) {
             int posColon=result.lastIndexOf(".");
             if(posColon>=0 && posColon+1+afterColon<result.length()) {
@@ -62,16 +62,16 @@ public class FloatSpecification {
     public int getMaxStringLength() {
         int result;
         if(Math.abs(min)<Math.abs(max))
-            result=(int)Math.floor(Math.log10(Math.abs(min)))+1;
+            result=(int)Math.floor(Math.log(Math.abs(min))/Math.log(10))+1;
         else
-            result=(int)Math.floor(Math.log10(Math.abs(max)))+1;
+            result=(int)Math.floor(Math.log(Math.abs(max))/Math.log(10))+1;
             
         if(min<0) {
             result+=1;
         }
         
         if(precision<1) {
-            result+=(int)Math.floor(-Math.log10(precision));
+            result+=(int)Math.floor(-Math.log(precision)/Math.log(10));
         }
         
         return result;

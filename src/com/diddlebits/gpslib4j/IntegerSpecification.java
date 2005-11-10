@@ -59,9 +59,9 @@ public class IntegerSpecification {
     public int getMaxStringLength() {
         int result;
         if(Math.abs(min)<Math.abs(max))
-            result=(int)Math.floor(Math.log10(Math.abs(min)))+1;
+            result=(int)Math.floor(Math.log(Math.abs(min))/Math.log(10))+1;
         else
-            result=(int)Math.floor(Math.log10(Math.abs(max)))+1;
+            result=(int)Math.floor(Math.log(Math.abs(max))/Math.log(10))+1;
             
         if(min<0) {
             result+=1;

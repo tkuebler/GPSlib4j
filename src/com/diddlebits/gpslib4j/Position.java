@@ -1,5 +1,8 @@
 package com.diddlebits.gpslib4j;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 /**
  * This is an immutable class meant for containing latitude/longitude positions.
  */
@@ -8,9 +11,13 @@ public class Position {
     private static final double MIN_PRECISION = 0.00001;
 
     private double lat, lon;
-
+    private static NumberFormat minutesFormat = new DecimalFormat("0.00");
+    private static NumberFormat degreesFormat = new DecimalFormat("00");
+    
     /**
      * Makes a new position. Initializes the latitude and the longitude to 0.
+     * 
+     * note, useless without setter methods.
      */
     public Position() {
         lat = 0;
@@ -69,11 +76,13 @@ public class Position {
             lat = -lat;
             direction = 'S';
         }
-        int intPart = (int) Math.floor(lat);
-        double minutes = (lat - intPart) * 60.0;
-        Object params[] = { new Character(direction), new Integer(intPart),
-                new Double(minutes) };
-        return String.format("%c%02d'%06.3f", params);
+        int intPart=(int)Math.floor(lat);
+        String minutes= minutesFormat.format((lat-intPart)*60.0);
+        degreesFormat.setMaximumIntegerDigits(2);
+        String degrees = degreesFormat.format(intPart);
+        //Object params[]={new Character(direction), new Integer(intPart), new Double(minutes)};
+        //return String.format("%c%02d'%02.3f", params);
+        return direction + degrees + "'" + minutes;
     }
 
     public static String Longitude2DM(double lon) {
@@ -82,11 +91,13 @@ public class Position {
             lon = -lon;
             direction = 'O';
         }
-        int intPart = (int) Math.floor(lon);
-        double minutes = (lon - intPart) * 60.0;
-        Object params[] = { new Character(direction), new Integer(intPart),
-                new Double(minutes) };
-        return String.format("%c%03d'%06.3f", params);
+        int intPart=(int)Math.floor(lon);
+        String minutes= minutesFormat.format((lon-intPart)*60.0);
+        degreesFormat.setMaximumIntegerDigits(2);
+        String degrees = degreesFormat.format(intPart);
+        //Object params[]={new Character(direction), new Integer(intPart), new Double(minutes)};
+        //return String.format("%c%03d'%02.3f", params);
+        return direction + degrees + "'" + minutes;
     }
 
     public String toString() {
