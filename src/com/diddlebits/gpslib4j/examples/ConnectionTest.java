@@ -1,16 +1,6 @@
 package com.diddlebits.gpslib4j.examples;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Enumeration;
-import java.util.Vector;
-
-import javax.comm.CommPort;
-import javax.comm.CommPortIdentifier;
-import javax.comm.PortInUseException;
 
 import com.diddlebits.gpslib4j.FeatureNotSupportedException;
 import com.diddlebits.gpslib4j.GPS;
@@ -36,18 +26,7 @@ import com.diddlebits.gpslib4j.IWaypointListener;
 
 public class ConnectionTest implements IGPSlistener, IWaypointListener,
         ITrackpointListener, ILapListener, IRouteListener {
-    /** The communication port being used. */
-    String portname;
-
-    BufferedReader inuser;
-
     GPS gps;
-
-    CommPort port;
-
-    BufferedInputStream input;
-
-    BufferedOutputStream output;
 
     boolean transfering = false;
 
@@ -66,68 +45,25 @@ public class ConnectionTest implements IGPSlistener, IWaypointListener,
         } catch (UnsatisfiedLinkError e) {
             // who cares? must be already loaded...
         }
-        inuser = new BufferedReader(new InputStreamReader(System.in));
     }
 
     public void download() {
+        gps = Utils.get().connectGPS();
+        if (gps != null) {
+            gps.addGPSlistener(this);
+            gps.addWaypointListener(this);
+            gps.addTrackListener(this);
+            gps.addLapListener(this);
+            gps.addRouteListener(this);
 
-        String gpsBrand = ChooseBrand();
-        CommPortIdentifier zPort = ChoosePort();
-
-        try {
-            port = zPort.open("ConnectionTest", 5000);
-        } catch (PortInUseException e) {
-            System.out.println("Port already in use by " + e.currentOwner);
-            return;
+            testPosition();
+            testRoute();
+            testWaypoint();
+            testTrack();
+            // testLap();
+            testShutdown();
         }
-
-        try {
-            Thread.sleep(1500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            input = new BufferedInputStream(port.getInputStream());
-            output = new BufferedOutputStream(port.getOutputStream());
-        } catch (IOException e) {
-            System.out.println("Error opening port " + portname);
-            return;
-        }
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        transfering = true;
-        try {
-            gps = GPS.CreateInterface(gpsBrand, input, output, this);
-        } catch (FeatureNotSupportedException e) {
-            System.out.println("Error creating a driver");
-            return;
-        }
-
-        System.out.println("Connecting to GPS.");
-        // String description = ((GarminGPS) gps).getDescription();
-        waitForResponse();
-
-        gps.addGPSlistener(this);
-        gps.addWaypointListener(this);
-        gps.addTrackListener(this);
-        gps.addLapListener(this);
-        gps.addRouteListener(this);
-
-        System.out.println("Connected.");
-
-        testPosition();
-        testRoute();
-        testWaypoint();
-        testTrack();
-        //testLap();
-        testShutdown();
-        
-        port.close();
+        Utils.get().closeGPS();
     }
 
     private void testRoute() {
@@ -241,127 +177,9 @@ public class ConnectionTest implements IGPSlistener, IWaypointListener,
                 e1.printStackTrace();
             }
         }
-        if(transfering) {
+        if (transfering) {
             System.out.println("Timeout!!!");
             System.exit(-1);
-        }
-    }
-
-    /**
-     * Ok. Ridiculous method, but I'm hoping that more GPS-types will be added
-     * later. Lists the types of GPS that are available and lets the user pick
-     * one.
-     */
-    public String ListGPS() {
-        int index = -1;
-        while (index == -1) {
-            System.out.println("\nAvailable GPS-types:");
-            System.out.println(" 1. Garmin");
-            System.out.print("Select GPS: ");
-            String input = readFromUser();
-
-            try {
-                index = Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                index = -1;
-                continue;
-            }
-
-            if (index != 1) {
-                index = -1;
-                continue;
-            }
-        }
-        switch (index) {
-        case 1:
-            return "GARMIN";
-        default:
-            return "unknown";
-        }
-    }
-
-    private String ChooseBrand() {
-        Vector brands = GPS.GetBrands();
-        int index = -1;
-        while (index < 0) {
-            System.out.println("Available brands: ");
-            int j = 1;
-            for (Enumeration i = brands.elements(); i.hasMoreElements();) {
-                System.out.print("  " + j++ + ". ");
-                System.out.println(i.nextElement());
-            }
-
-            if (GPS.GetBrands().size() > 1) {
-                System.out.print("Select brand: ");
-                String input = readFromUser();
-
-                try {
-                    index = Integer.parseInt(input);
-                } catch (NumberFormatException e) {
-                    index = -1;
-                    continue;
-                }
-
-                if (index < 1 || index > GPS.GetBrands().size()) {
-                    index = -1;
-                    continue;
-                }
-            } else {
-                index = 1;
-                System.out
-                        .println("Take the only one available for the moment: "
-                                + (String) brands.elementAt(index - 1));
-                System.out.println("");
-            }
-        }
-        return (String) brands.elementAt(index - 1);
-    }
-
-    private CommPortIdentifier ChoosePort() {
-        Vector names = null;
-        int index = -1;
-        while (index == -1) {
-            int j = 1;
-            names = new Vector();
-            System.out.println("Available ports: ");
-            CommPortIdentifier c;
-            for (Enumeration i = CommPortIdentifier.getPortIdentifiers(); i
-                    .hasMoreElements();) {
-                c = (CommPortIdentifier) i.nextElement();
-                System.out.print("  " + j++ + ". " + c.getName());
-                names.add(c);
-                if (c.getPortType() == CommPortIdentifier.PORT_SERIAL)
-                    System.out.print("\t SERIAL\n");
-                if (c.getPortType() == CommPortIdentifier.PORT_PARALLEL)
-                    System.out.print("\t PARALLEL\n");
-            }
-
-            System.out.print("Select port: ");
-            String input = readFromUser();
-
-            try {
-                index = Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                index = -1;
-                continue;
-            }
-
-            if ((index < 1) || (index > names.size())) {
-                index = -1;
-                continue;
-            }
-
-        }
-
-        return (CommPortIdentifier) names.elementAt(index - 1);
-    }
-
-    public String readFromUser() {
-        try {
-            return inuser.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
         }
     }
 
