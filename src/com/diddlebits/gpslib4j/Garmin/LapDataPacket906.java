@@ -8,6 +8,8 @@ import com.diddlebits.gpslib4j.*;
  * This class encapsulates a lap-packet.
  */
 public class LapDataPacket906 extends GarminPacket implements ILap {
+    private static final long serialVersionUID = 2269583804182557006L;
+
     protected boolean bound = false;
 
     /** start time */
@@ -38,7 +40,7 @@ public class LapDataPacket906 extends GarminPacket implements ILap {
             0.0, 1e24, 0.1, false);
 
     protected static IntegerSpecification TotalTimeSpecification = new IntegerSpecification(
-            0, 0xFFFFFFFE, true);
+            0, 0xFFFFFFFEl, true);
 
     protected static IntegerSpecification CaloriesSpecification = new IntegerSpecification(
             0, 0xFFFF, false);
@@ -59,9 +61,9 @@ public class LapDataPacket906 extends GarminPacket implements ILap {
      */
     public void initFromRawPacket(GarminRawPacket p)
             throws PacketNotRecognizedException, InvalidFieldValue {
-        if (p.getID() != GarminRawPacket.Pid_Lap) {
+        if (p.getPID() != GarminRawPacket.Pid_Lap) {
             throw (new PacketNotRecognizedException(GarminRawPacket.Pid_Lap, p
-                    .getID()));
+                    .getPID()));
         }
 
         super.initFromRawPacket(p);
@@ -99,7 +101,7 @@ public class LapDataPacket906 extends GarminPacket implements ILap {
         start_time = visitor.timeField(LONG_DATE, GPSFields.StartTimeField,
                 start_time);
         total_time = visitor.intField(UINT32, GPSFields.TotalTimeField,
-                total_time, TotalTimeSpecification, 0xFFFFFFFF);
+                total_time, TotalTimeSpecification, 0xFFFFFFFFl);
         total_distance = (float) visitor.floatField(FLOAT32,
                 GPSFields.TotalDistanceField, total_distance,
                 DistanceSpecification);
@@ -117,5 +119,9 @@ public class LapDataPacket906 extends GarminPacket implements ILap {
 
     public String getPacketType() {
         return "lap";
+    }
+
+    public int getPacketId() {
+        return GarminRawPacket.Pid_Lap;
     }
 }
