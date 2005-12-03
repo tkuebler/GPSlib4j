@@ -52,7 +52,7 @@
 		-->
 	</target>
 	
-	<target name="jar">
+	<target name="jar" depends="compile">
 		<jar destfile="${libdir}/GPSlib4J.jar"
 			basedir="${builddir}"
 		/>
