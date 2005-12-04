@@ -14,8 +14,9 @@ public class Position implements Serializable {
     private static final double MIN_PRECISION = 0.00001;
 
     private double lat, lon;
-    private static NumberFormat minutesFormat = new DecimalFormat("0.00");
-    private static NumberFormat degreesFormat = new DecimalFormat("00");
+    private static NumberFormat minutesFormat = new DecimalFormat("00.000");
+    private static NumberFormat degrees2Format = new DecimalFormat("00");
+    private static NumberFormat degrees3Format = new DecimalFormat("000");
     
     /**
      * Makes a new position. Initializes the latitude and the longitude to 0.
@@ -81,8 +82,8 @@ public class Position implements Serializable {
         }
         int intPart=(int)Math.floor(lat);
         String minutes= minutesFormat.format((lat-intPart)*60.0);
-        degreesFormat.setMaximumIntegerDigits(2);
-        String degrees = degreesFormat.format(intPart);
+        degrees2Format.setMaximumIntegerDigits(2);
+        String degrees = degrees2Format.format(intPart);
         //Object params[]={new Character(direction), new Integer(intPart), new Double(minutes)};
         //return String.format("%c%02d'%02.3f", params);
         return direction + degrees + "'" + minutes;
@@ -96,8 +97,7 @@ public class Position implements Serializable {
         }
         int intPart=(int)Math.floor(lon);
         String minutes= minutesFormat.format((lon-intPart)*60.0);
-        degreesFormat.setMaximumIntegerDigits(2);
-        String degrees = degreesFormat.format(intPart);
+        String degrees = degrees3Format.format(intPart);
         //Object params[]={new Character(direction), new Integer(intPart), new Double(minutes)};
         //return String.format("%c%03d'%02.3f", params);
         return direction + degrees + "'" + minutes;
