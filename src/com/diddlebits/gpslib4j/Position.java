@@ -123,4 +123,14 @@ public class Position implements Serializable {
     public int hashCode() {
         return (int) Math.round((lat * lon) / (80 * 180) * Integer.MAX_VALUE);
     }
+
+    public double getLatitudeRadian() {
+        // TODO Auto-generated method stub
+        return lat * Math.PI / 180.0d;
+    }
+
+    public double getLongitudeRadian() {
+        // TODO Auto-generated method stub
+        return lon * Math.PI / 180.0d;
+    }
 }
