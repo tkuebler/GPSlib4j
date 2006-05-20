@@ -472,13 +472,13 @@ public abstract class GPS implements Runnable {
     /**
      * This method is listening for input from the GPS.
      */
-    public void run() {
+    public synchronized void run() {
         while (active) {
             // try to get something from the GPS
             try {
                 if (inputAvailable() == 0) {
                     try {
-                        Thread.sleep(100);
+                        this.wait(10);
                     } catch (InterruptedException e) {
                     }
                     continue;

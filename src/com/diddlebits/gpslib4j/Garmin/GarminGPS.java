@@ -471,7 +471,7 @@ public class GarminGPS extends GPS {
         sendPackets(toSend);
     }
 
-    private void sendPackets(Collection toSend) throws InvalidFieldValue,
+    private synchronized void sendPackets(Collection toSend) throws InvalidFieldValue,
             InvalidPacketException, IOException {
         Iterator it = toSend.iterator();
         while (it.hasNext()) {
