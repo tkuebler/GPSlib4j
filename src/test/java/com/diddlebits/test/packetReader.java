@@ -1,4 +1,4 @@
-package com.diddlebits.gpslib4j.test;
+package com.diddlebits.test;
 import javax.comm.*;
 import java.io.*;
 
